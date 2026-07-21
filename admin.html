@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Portal | Sree Veerabhadra Pickles</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">
+    <img src="logo.png" alt="Logo">
+    <div><h1>Admin Portal</h1><p>Sree Veerabhadra Pickles</p></div>
+  </a>
+  <a class="admin-link" href="index.html">View Store</a>
+</header>
+
+<main class="admin-main">
+  <section id="loginCard" class="login-card">
+    <h2>Admin Login</h2>
+    <p class="muted">Demo password: <strong>admin123</strong></p>
+    <label>Password
+      <input id="adminPassword" type="password" placeholder="Enter admin password">
+    </label>
+    <button id="loginBtn" class="btn primary full">Login</button>
+    <p id="loginMessage" class="error"></p>
+  </section>
+
+  <section id="dashboard" class="hidden">
+    <div class="dashboard-header">
+      <div><p class="eyebrow">Business control centre</p><h2>Dashboard</h2></div>
+      <button id="logoutBtn" class="btn secondary">Logout</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="ordersTab">Orders</button>
+      <button class="tab" data-tab="productsTab">Products</button>
+      <button class="tab" data-tab="couponsTab">Coupons</button>
+    </div>
+
+    <section id="ordersTab" class="tab-panel">
+      <div class="stats">
+        <div><strong id="totalOrders">0</strong><span>Total Orders</span></div>
+        <div><strong id="pendingOrders">0</strong><span>Pending</span></div>
+        <div><strong id="completedOrders">0</strong><span>Completed</span></div>
+        <div><strong>₹<span id="totalRevenue">0</span></strong><span>Revenue</span></div>
+      </div>
+      <div id="ordersList" class="stack"></div>
+    </section>
+
+    <section id="productsTab" class="tab-panel hidden">
+      <div class="admin-grid">
+        <form id="productForm" class="panel-card">
+          <h3 id="productFormTitle">Add Product</h3>
+          <input type="hidden" id="productId">
+          <label>Product name<input id="productName" required></label>
+          <label>Weight<input id="productWeight" placeholder="500 g" required></label>
+          <div class="two">
+            <label>MRP ₹<input id="productMrp" type="number" min="0" required></label>
+            <label>Offer price ₹<input id="productOffer" type="number" min="0" required></label>
+          </div>
+          <label>Product photo<input id="productImage" type="file" accept="image/*"></label>
+          <label class="check"><input id="productStock" type="checkbox" checked> In stock</label>
+          <div class="button-row">
+            <button class="btn primary" type="submit">Save Product</button>
+            <button class="btn secondary" type="button" id="cancelProductEdit">Clear</button>
+          </div>
+          <small class="muted">Uploaded photos are stored in this browser for the demo.</small>
+        </form>
+        <div class="panel-card">
+          <h3>Current Products</h3>
+          <div id="adminProducts" class="stack compact"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="couponsTab" class="tab-panel hidden">
+      <div class="admin-grid">
+        <form id="couponForm" class="panel-card">
+          <h3 id="couponFormTitle">Add Coupon</h3>
+          <input type="hidden" id="couponId">
+          <label>Coupon code<input id="couponCodeAdmin" required placeholder="WELCOME10"></label>
+          <label>Discount type
+            <select id="couponType">
+              <option value="percent">Percentage</option>
+              <option value="fixed">Fixed amount</option>
+            </select>
+          </label>
+          <div class="two">
+            <label>Discount value<input id="couponValue" type="number" min="0" required></label>
+            <label>Minimum order ₹<input id="couponMinimum" type="number" min="0" value="0"></label>
+          </div>
+          <label>Maximum discount ₹<input id="couponMaximum" type="number" min="0" value="0"></label>
+          <label>Expiry date<input id="couponExpiry" type="date"></label>
+          <label class="check"><input id="couponActive" type="checkbox" checked> Active</label>
+          <div class="button-row">
+            <button class="btn primary" type="submit">Save Coupon</button>
+            <button class="btn secondary" type="button" id="cancelCouponEdit">Clear</button>
+          </div>
+        </form>
+        <div class="panel-card">
+          <h3>Current Coupons</h3>
+          <div id="adminCoupons" class="stack compact"></div>
+        </div>
+      </div>
+    </section>
+  </section>
+</main>
+
+<script src="store.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sree Veerabhadra Pickles</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">
+    <img src="logo.png" alt="Sree Veerabhadra Pickles">
+    <div>
+      <h1>Sree Veerabhadra Pickles</h1>
+      <p>Traditional taste, homemade with care</p>
+    </div>
+  </a>
+  <a class="admin-link" href="admin.html">Admin Portal</a>
+</header>
+
+<section class="hero">
+  <div>
+    <span class="pill">100% Vegetarian • Homemade</span>
+    <h2>Authentic pickles for every meal</h2>
+    <p>Choose your favourite pickle, apply a coupon and place your order online.</p>
+    <a href="#products" class="btn primary">Shop Pickles</a>
+  </div>
+  <img src="logo.png" alt="Pickle brand logo">
+</section>
+
+<main>
+  <section id="products" class="section">
+    <div class="section-title">
+      <div>
+        <p class="eyebrow">Freshly prepared</p>
+        <h2>Our Products</h2>
+      </div>
+      <span id="productCount"></span>
+    </div>
+    <div id="productGrid" class="product-grid"></div>
+  </section>
+
+  <section class="section order-section">
+    <div class="order-layout">
+      <div>
+        <p class="eyebrow">Quick checkout</p>
+        <h2>Place Your Order</h2>
+        <form id="orderForm">
+          <div class="form-grid">
+            <label>Full name
+              <input id="customerName" required>
+            </label>
+            <label>Phone number
+              <input id="phone" type="tel" required maxlength="10" pattern="[0-9]{10}">
+            </label>
+            <label class="wide">Delivery address
+              <textarea id="address" required></textarea>
+            </label>
+            <label>Payment method
+              <select id="payment">
+                <option>Cash on Delivery</option>
+                <option>UPI</option>
+              </select>
+            </label>
+            <label>Coupon code
+              <div class="coupon-row">
+                <input id="couponCode" placeholder="Example: WELCOME10">
+                <button type="button" class="btn secondary" id="applyCoupon">Apply</button>
+              </div>
+              <small id="couponMessage"></small>
+            </label>
+          </div>
+          <button class="btn primary full" type="submit">Confirm Order</button>
+          <p id="orderMessage" class="success"></p>
+        </form>
+      </div>
+
+      <aside class="cart-panel">
+        <h3>Your Cart</h3>
+        <div id="cartItems" class="cart-items empty">No items added yet.</div>
+        <div class="totals">
+          <div><span>Subtotal</span><strong>₹<span id="subtotal">0</span></strong></div>
+          <div><span>Discount</span><strong>- ₹<span id="discount">0</span></strong></div>
+          <div class="grand"><span>Total</span><strong>₹<span id="grandTotal">0</span></strong></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <img src="logo.png" alt="">
+  <p>© 2026 Sree Veerabhadra Pickles</p>
+</footer>
+
+<script src="store.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
