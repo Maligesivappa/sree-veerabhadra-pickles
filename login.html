@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Customer Login | Sree Veerabhadra Pickles</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #f7f2e8;
+      color: #222;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 420px;
+      margin: 70px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      color: #14532d;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #14532d;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0f3f22;
+    }
+
+    .message {
+      margin-top: 15px;
+      text-align: center;
+      color: red;
+      min-height: 20px;
+    }
+
+    .links {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .links a {
+      color: #14532d;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .back {
+      display: block;
+      margin-top: 20px;
+      text-align: center;
+      color: #555;
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Customer Login</h1>
+
+    <p class="subtitle">
+      Login to view your orders and save your details
+    </p>
+
+    <form id="loginForm">
+      <label for="email">Email</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        required
+        placeholder="Enter your email"
+      >
+
+      <label for="password">Password</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        required
+        placeholder="Enter your password"
+      >
+
+      <button type="submit">Login</button>
+    </form>
+
+    <div id="message" class="message"></div>
+
+    <div class="links">
+      New customer?
+      <a href="register.html">Create an account</a>
+    </div>
+
+    <div class="links">
+      <a href="#" id="forgotPassword">Forgot password?</a>
+    </div>
+
+    <a href="index.html" class="back">← Back to Store</a>
+  </div>
+
+  <script type="module" src="login.js"></script>
+</body>
+</html>
