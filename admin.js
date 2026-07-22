@@ -73,6 +73,7 @@ function renderOrders(orders){
     </tr>
   `).join("") : '<tr><td colspan="7">No orders yet.</td></tr>';
 }
+
 window.changeStatus = async (id, status) => {
   try {
     await updateDoc(doc(db, "orders", id), {
@@ -86,21 +87,19 @@ window.changeStatus = async (id, status) => {
 };
 
 document.querySelectorAll(".tab").forEach((tab) => {
-  tab.addEventListener("click", () => {
+  tab.onclick = () => {
     document.querySelectorAll(".tab").forEach((item) => {
       item.classList.remove("active");
     });
 
     tab.classList.add("active");
 
-    const selectedTab = tab.dataset.tab;
-
-    if (selectedTab === "products") {
+    if (tab.dataset.tab === "products") {
       $("#productsTab").classList.remove("hidden");
       $("#ordersTab").classList.add("hidden");
     } else {
       $("#ordersTab").classList.remove("hidden");
       $("#productsTab").classList.add("hidden");
     }
-  });
+  };
 });
