@@ -52,13 +52,25 @@ $("#cancelEdit").onclick=resetForm;
 function resetForm(){$("#productForm").reset();$("#productForm").elements.id.value="";$("#formTitle").textContent="Add Product";$("#cancelEdit").classList.add("hidden")}
 
 function renderOrders(orders){
- $("#orderRows").innerHTML=orders.length?orders.map(o=>`<tr>
- <td>${o.customer?.phone||""}</td><td>${o.customer?.address||""}, ${o.customer?.city||""} - ${o.customer?.pincode||""}</td><td>${money(o.total)}</td>
- <td><select class="status" onchange="changeStatus('${o.id}',this.value)"><option ${o.status==="New"?"selected":""}>New</option><option ${o.status==="Confirmed"?"selected":""}>Confirmed</option><option ${o.status==="Packed"?"selected":""}>Packed</option><option ${o.status==="Shipped"?"selected":""}>Shipped</option><option ${o.status==="Delivered"?"selected":""}>Delivered</option><option ${o.status==="Cancelled"?"selected":""}>Cancelled</option></select></td></tr>`).join(""):`<tr><td colspan="6">No orders yet.</td></tr>`;
+  $("#orderRows").innerHTML = orders.length ? orders.map(o => `
+    <tr>
+      <td>${o.id.slice(0,8).toUpperCase()}</td>
+      <td>${o.customer?.name || ""}</td>
+      <td>${o.customer?.phone || ""}</td>
+      <td>${o.customer?.address || ""}, ${o.customer?.city || ""} - ${o.customer?.pincode || ""}</td>
+      <td>${money(o.total)}</td>
+      <td>${o.customer?.payment || ""}</td>
+      <td>
+        <select class="status" onchange="changeStatus('${o.id}',this.value)">
+          <option ${o.status==="New"?"selected":""}>New</option>
+          <option ${o.status==="Confirmed"?"selected":""}>Confirmed</option>
+          <option ${o.status==="Packed"?"selected":""}>Packed</option>
+          <option ${o.status==="Shipped"?"selected":""}>Shipped</option>
+          <option ${o.status==="Delivered"?"selected":""}>Delivered</option>
+          <option ${o.status==="Cancelled"?"selected":""}>Cancelled</option>
+        </select>
+      </td>
+    </tr>
+  `).join("") : '<tr><td colspan="7">No orders yet.</td></tr>';
 }
-window.changeStatus=async(id,status)=>updateDoc(doc(db,"orders",id),{status,updatedAt:serverTimestamp()});
 
-document.querySelectorAll(".tab").forEach(btn=>btn.onclick=()=>{
- document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));btn.classList.add("active");
- const products=btn.dataset.tab==="products";$("#productsTab").classList.toggle("hidden",!products);$("#ordersTab").classList.toggle("hidden",products);
-});
