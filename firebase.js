@@ -9,7 +9,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA9MIf35S8_8NKrsGtxVoqIwmxeLxjIE0",
+  apiKey: "AIzaSyA9MIf35S0_8NKrsGtxVoqIwnxeLxjIEO0",
   authDomain: "sree-veerabhadra-pickles.firebaseapp.com",
   projectId: "sree-veerabhadra-pickles",
   storageBucket: "sree-veerabhadra-pickles.firebasestorage.app",
