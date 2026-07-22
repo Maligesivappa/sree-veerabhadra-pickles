@@ -10,7 +10,7 @@ function renderProducts(filter=""){
   const list=state.products.filter(p=>(p.name||"").toLowerCase().includes(q));
   $("#productGrid").innerHTML=list.map(p=>`
   <article class="product">
-    <div class="product-img"><img src="${p.imageUrl||"assets/logo.jpeg"}" alt="${p.name||"Pickle"}" onerror="this.src='assets/logo.jpeg'"></div>
+    <div class="product-img"><img src="${p.imageUrl||"logo.jpeg"}" alt="${p.name||"Pickle"}" onerror="this.src='logo.jpeg'"></div>
     <div class="product-body">
       <h3>${p.name||"Pickle"}</h3><p>${p.weight||""}</p>
       <div class="prices"><span class="offer">${money(p.offerPrice)}</span><span class="mrp">${money(p.mrp)}</span></div>
