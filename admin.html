@@ -1,113 +1,50 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Portal | Sree Veerabhadra Pickles</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Portal | Sree Veerabhadra Pickles</title><link rel="stylesheet" href="styles.css">
+<style>
+body{background:#f6f1e7}.admin{width:min(1180px,94%);margin:28px auto}.top{display:flex;justify-content:space-between;align-items:center;gap:20px}.panel{background:white;border:1px solid var(--border);border-radius:18px;padding:20px}.login{width:min(440px,94%);margin:80px auto}.admin-grid{display:grid;grid-template-columns:350px 1fr;gap:22px}.admin-form{display:grid;gap:12px}.admin-form input,.admin-form textarea,.admin-form select{padding:12px;border:1px solid var(--border);border-radius:10px;font:inherit}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap}.small{border:0;border-radius:8px;padding:8px 10px;cursor:pointer}.danger{background:#fee;color:#a22}.status{padding:6px 9px;border-radius:8px;border:1px solid var(--border)}.tabs{display:flex;gap:10px;margin:18px 0}.tab{border:1px solid var(--border);background:white;border-radius:10px;padding:10px 14px;cursor:pointer}.tab.active{background:var(--green);color:white}@media(max-width:860px){.admin-grid{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
-<header class="topbar">
-  <a class="brand" href="index.html">
-    <img src="logo.png" alt="Logo">
-    <div><h1>Admin Portal</h1><p>Sree Veerabhadra Pickles</p></div>
-  </a>
-  <a class="admin-link" href="index.html">View Store</a>
-</header>
+<section id="loginView" class="panel login">
+  <span class="tag">Admin login</span><h2>Sree Veerabhadra Pickles</h2>
+  <form id="loginForm" class="admin-form">
+    <input name="email" type="email" placeholder="Admin email" required>
+    <input name="password" type="password" placeholder="Password" required>
+    <button class="btn primary" type="submit">Login</button>
+  </form>
+  <p id="loginMessage"></p>
+</section>
 
-<main class="admin-main">
-  <section id="loginCard" class="login-card">
-    <h2>Admin Login</h2>
-    <p class="muted">Demo password: <strong>admin123</strong></p>
-    <label>Password
-      <input id="adminPassword" type="password" placeholder="Enter admin password">
-    </label>
-    <button id="loginBtn" class="btn primary full">Login</button>
-    <p id="loginMessage" class="error"></p>
-  </section>
+<section id="adminView" class="admin hidden">
+  <div class="top"><div><span class="tag">Admin portal</span><h2>Manage Store</h2></div>
+  <div class="actions"><a href="index.html" class="btn secondary">View Website</a><button id="logoutBtn" class="btn primary">Logout</button></div></div>
 
-  <section id="dashboard" class="hidden">
-    <div class="dashboard-header">
-      <div><p class="eyebrow">Business control centre</p><h2>Dashboard</h2></div>
-      <button id="logoutBtn" class="btn secondary">Logout</button>
+  <div class="tabs"><button class="tab active" data-tab="products">Products</button><button class="tab" data-tab="orders">Orders</button></div>
+
+  <div id="productsTab" class="admin-grid">
+    <div class="panel">
+      <h3 id="formTitle">Add Product</h3>
+      <form id="productForm" class="admin-form">
+        <input type="hidden" name="id">
+        <input name="name" placeholder="Product name" required>
+        <input name="weight" placeholder="Weight, e.g. 500 g" required>
+        <input name="mrp" type="number" min="0" placeholder="MRP" required>
+        <input name="offerPrice" type="number" min="0" placeholder="Offer price" required>
+        <input name="imageUrl" placeholder="Image URL (add later)">
+        <textarea name="description" placeholder="Description"></textarea>
+        <select name="inStock"><option value="true">In stock</option><option value="false">Out of stock</option></select>
+        <button class="btn primary" type="submit">Save Product</button>
+        <button id="cancelEdit" class="btn secondary hidden" type="button">Cancel Edit</button>
+      </form>
     </div>
+    <div class="panel"><h3>Products</h3><div class="table-wrap"><table><thead><tr><th>Name</th><th>Weight</th><th>MRP</th><th>Offer</th><th>Stock</th><th>Actions</th></tr></thead><tbody id="productRows"></tbody></table></div></div>
+  </div>
 
-    <div class="tabs">
-      <button class="tab active" data-tab="ordersTab">Orders</button>
-      <button class="tab" data-tab="productsTab">Products</button>
-      <button class="tab" data-tab="couponsTab">Coupons</button>
-    </div>
-
-    <section id="ordersTab" class="tab-panel">
-      <div class="stats">
-        <div><strong id="totalOrders">0</strong><span>Total Orders</span></div>
-        <div><strong id="pendingOrders">0</strong><span>Pending</span></div>
-        <div><strong id="completedOrders">0</strong><span>Completed</span></div>
-        <div><strong>₹<span id="totalRevenue">0</span></strong><span>Revenue</span></div>
-      </div>
-      <div id="ordersList" class="stack"></div>
-    </section>
-
-    <section id="productsTab" class="tab-panel hidden">
-      <div class="admin-grid">
-        <form id="productForm" class="panel-card">
-          <h3 id="productFormTitle">Add Product</h3>
-          <input type="hidden" id="productId">
-          <label>Product name<input id="productName" required></label>
-          <label>Weight<input id="productWeight" placeholder="500 g" required></label>
-          <div class="two">
-            <label>MRP ₹<input id="productMrp" type="number" min="0" required></label>
-            <label>Offer price ₹<input id="productOffer" type="number" min="0" required></label>
-          </div>
-          <label>Product photo<input id="productImage" type="file" accept="image/*"></label>
-          <label class="check"><input id="productStock" type="checkbox" checked> In stock</label>
-          <div class="button-row">
-            <button class="btn primary" type="submit">Save Product</button>
-            <button class="btn secondary" type="button" id="cancelProductEdit">Clear</button>
-          </div>
-          <small class="muted">Uploaded photos are stored in this browser for the demo.</small>
-        </form>
-        <div class="panel-card">
-          <h3>Current Products</h3>
-          <div id="adminProducts" class="stack compact"></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="couponsTab" class="tab-panel hidden">
-      <div class="admin-grid">
-        <form id="couponForm" class="panel-card">
-          <h3 id="couponFormTitle">Add Coupon</h3>
-          <input type="hidden" id="couponId">
-          <label>Coupon code<input id="couponCodeAdmin" required placeholder="WELCOME10"></label>
-          <label>Discount type
-            <select id="couponType">
-              <option value="percent">Percentage</option>
-              <option value="fixed">Fixed amount</option>
-            </select>
-          </label>
-          <div class="two">
-            <label>Discount value<input id="couponValue" type="number" min="0" required></label>
-            <label>Minimum order ₹<input id="couponMinimum" type="number" min="0" value="0"></label>
-          </div>
-          <label>Maximum discount ₹<input id="couponMaximum" type="number" min="0" value="0"></label>
-          <label>Expiry date<input id="couponExpiry" type="date"></label>
-          <label class="check"><input id="couponActive" type="checkbox" checked> Active</label>
-          <div class="button-row">
-            <button class="btn primary" type="submit">Save Coupon</button>
-            <button class="btn secondary" type="button" id="cancelCouponEdit">Clear</button>
-          </div>
-        </form>
-        <div class="panel-card">
-          <h3>Current Coupons</h3>
-          <div id="adminCoupons" class="stack compact"></div>
-        </div>
-      </div>
-    </section>
-  </section>
-</main>
-
-<script src="store.js"></script>
-<script src="admin.js"></script>
+  <div id="ordersTab" class="panel hidden"><h3>Orders</h3><div class="table-wrap"><table><thead><tr><th>Order ID</th><th>Customer</th><th>Phone</th><th>Total</th><th>Payment</th><th>Status</th></tr></thead><tbody id="orderRows"></tbody></table></div></div>
+</section>
+<script type="module" src="admin.js"></script>
 </body>
 </html>

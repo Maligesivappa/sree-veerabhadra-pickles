@@ -1,20 +1,46 @@
-SREE VEERABHADRA PICKLES WEBSITE
+SREE VEERABHADRA PICKLES — FIREBASE WEBSITE
+===========================================
 
-Open index.html for the customer website.
-Open admin.html for the admin portal.
+UPLOAD THESE FILES TO GITHUB
+1. Extract this ZIP.
+2. In your GitHub repository, upload all files and the assets folder.
+3. Replace old files when asked.
+4. Commit changes.
+5. Wait 1–2 minutes and refresh GitHub Pages.
 
-Admin demo password:
-admin123
+BEFORE ADMIN LOGIN WORKS
+Firebase Console:
+1. Open Authentication.
+2. Click Get started.
+3. Enable Email/Password.
+4. Open Users.
+5. Add your admin email and password.
 
-Admin features:
-- Add, edit and delete products
-- Upload product photos
-- Set weight, MRP and offer price
-- Mark products in stock or out of stock
-- Add percentage or fixed-price coupon codes
-- Set minimum order, maximum discount, expiry date and active status
-- View orders and update order status
+FIRESTORE RULES
+1. Open Firestore > Rules.
+2. Replace existing rules with the content in firestore-rules.txt.
+3. Click Publish.
 
-Important demo limitation:
-This version uses browser localStorage. Products, photos, coupons and orders are available only in the same browser/device.
-For a real public website where customer orders appear on your phone or computer from any device, connect it to Firebase or Supabase and deploy it online.
+ADMIN PAGE
+https://YOUR-GITHUB-PAGES-LINK/admin.html
+
+PRODUCTS
+Add products from the Admin Portal later:
+- Product name
+- Weight
+- MRP
+- Offer price
+- Image URL
+- Description
+- Stock
+
+ORDERS
+Customer orders are saved automatically to Firestore.
+Admin can update order status.
+
+UPI
+UPI is disabled for now. Add the PhonePe Business QR later.
+
+IMPORTANT
+Never put your Firebase admin password directly inside JavaScript.
+Use Firebase Authentication.

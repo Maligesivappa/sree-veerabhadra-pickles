@@ -1,91 +1,69 @@
-let cart=[];
-let activeCoupon=null;
+import { db, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "./firebase.js";
 
-function products(){return getProducts()}
+const state={products:[],cart:JSON.parse(localStorage.getItem("svp_cart")||"[]")};
+const $=s=>document.querySelector(s);
+const money=n=>`₹${Number(n||0).toLocaleString("en-IN")}`;
+const saveCart=()=>localStorage.setItem("svp_cart",JSON.stringify(state.cart));
 
-function renderProducts(){
-  const list=products();
-  document.getElementById('productCount').textContent=`${list.length} products`;
-  const grid=document.getElementById('productGrid');
-  grid.innerHTML=list.map(p=>{
-    const saving=Math.max(0,money(p.mrp)-money(p.offer));
-    return `<article class="product-card ${p.stock?'':'out'}">
-      <img src="${p.image||placeholder(p.name)}" alt="${p.name}">
-      <div class="product-body">
-        <h3>${p.name}</h3>
-        <p>${p.weight}</p>
-        <div class="price-line">
-          <span class="offer">₹${money(p.offer)}</span>
-          <span class="mrp">₹${money(p.mrp)}</span>
-          ${saving?`<span class="save">Save ₹${saving}</span>`:''}
-        </div>
-        ${p.stock?`<div class="qty-row"><input id="qty-${p.id}" type="number" min="1" max="20" value="1"><button class="btn primary" onclick="addToCart('${p.id}')">Add to Cart</button></div>`:`<strong>Out of stock</strong>`}
+function renderProducts(filter=""){
+  const q=filter.toLowerCase().trim();
+  const list=state.products.filter(p=>(p.name||"").toLowerCase().includes(q));
+  $("#productGrid").innerHTML=list.map(p=>`
+  <article class="product">
+    <div class="product-img"><img src="${p.imageUrl||"assets/logo.jpeg"}" alt="${p.name||"Pickle"}" onerror="this.src='assets/logo.jpeg'"></div>
+    <div class="product-body">
+      <h3>${p.name||"Pickle"}</h3><p>${p.weight||""}</p>
+      <div class="prices"><span class="offer">${money(p.offerPrice)}</span><span class="mrp">${money(p.mrp)}</span></div>
+      <div class="product-actions">
+        <input class="qty" id="qty-${p.id}" type="number" min="1" max="10" value="1">
+        <button class="btn primary full" onclick="addToCart('${p.id}')">Add to Cart</button>
       </div>
-    </article>`;
-  }).join('');
+    </div>
+  </article>`).join("");
+  $("#emptyProducts").classList.toggle("hidden",list.length!==0);
 }
 
-function addToCart(id){
-  const p=products().find(x=>x.id===id);
-  if(!p||!p.stock)return;
-  const qty=Math.max(1,Number(document.getElementById(`qty-${id}`).value)||1);
-  const found=cart.find(x=>x.id===id);
-  if(found)found.qty+=qty;else cart.push({...p,qty});
-  renderCart();
-}
-function removeItem(id){cart=cart.filter(x=>x.id!==id);renderCart()}
+window.addToCart=id=>{
+  const p=state.products.find(x=>x.id===id); if(!p)return;
+  const qty=Math.max(1,Number(document.querySelector(`#qty-${id}`).value)||1);
+  const found=state.cart.find(x=>x.id===id);
+  if(found)found.qty+=qty;else state.cart.push({...p,qty});
+  saveCart();renderCart();toast("Added to cart");
+};
+window.removeCart=id=>{state.cart=state.cart.filter(x=>x.id!==id);saveCart();renderCart()};
 
-function discountAmount(sub){
-  if(!activeCoupon)return 0;
-  let d=activeCoupon.type==='percent'?sub*(Number(activeCoupon.value)||0)/100:Number(activeCoupon.value)||0;
-  if(Number(activeCoupon.maximum)>0)d=Math.min(d,Number(activeCoupon.maximum));
-  return Math.min(sub,Math.round(d));
-}
 function renderCart(){
-  const box=document.getElementById('cartItems');
-  if(!cart.length){box.className='cart-items empty';box.textContent='No items added yet.'}
-  else{
-    box.className='cart-items';
-    box.innerHTML=cart.map(i=>`<div class="cart-line"><div><strong>${i.name} × ${i.qty}</strong><small>${i.weight} • ₹${money(i.offer)} each</small></div><div><strong>₹${money(i.offer)*i.qty}</strong><button class="remove" onclick="removeItem('${i.id}')">✕</button></div></div>`).join('');
-  }
-  const sub=cart.reduce((s,i)=>s+money(i.offer)*i.qty,0);
-  const disc=discountAmount(sub);
-  document.getElementById('subtotal').textContent=sub;
-  document.getElementById('discount').textContent=disc;
-  document.getElementById('grandTotal').textContent=sub-disc;
+  $("#cartCount").textContent=state.cart.reduce((a,b)=>a+b.qty,0);
+  $("#cartItems").innerHTML=state.cart.length?state.cart.map(i=>`
+  <div class="cart-item"><div><b>${i.name}</b><br><small>${i.weight||""} × ${i.qty}</small></div>
+  <div><b>${money(i.offerPrice*i.qty)}</b><br><button class="remove" onclick="removeCart('${i.id}')">Remove</button></div></div>`).join(""):`<div class="notice">Your cart is empty.</div>`;
+  $("#cartTotal").textContent=money(state.cart.reduce((a,b)=>a+(Number(b.offerPrice)*b.qty),0));
 }
+function drawer(show){$("#cartDrawer").classList.toggle("open",show);$("#overlay").classList.toggle("show",show)}
+function checkout(show){$("#checkoutModal").classList.toggle("show",show);$("#overlay").classList.toggle("show",show)}
+function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2500)}
 
-document.getElementById('applyCoupon').addEventListener('click',()=>{
-  const code=document.getElementById('couponCode').value.trim().toUpperCase();
-  const msg=document.getElementById('couponMessage');
-  const sub=cart.reduce((s,i)=>s+money(i.offer)*i.qty,0);
-  const c=getCoupons().find(x=>x.code.toUpperCase()===code);
-  if(!c||!c.active){activeCoupon=null;msg.textContent='Invalid or inactive coupon.';msg.className='error';renderCart();return}
-  if(c.expiry && new Date(c.expiry+'T23:59:59')<new Date()){activeCoupon=null;msg.textContent='This coupon has expired.';msg.className='error';renderCart();return}
-  if(sub<Number(c.minimum||0)){activeCoupon=null;msg.textContent=`Minimum order is ₹${c.minimum}.`;msg.className='error';renderCart();return}
-  activeCoupon=c;msg.textContent=`Coupon ${c.code} applied.`;msg.className='success';renderCart();
-});
-
-document.getElementById('orderForm').addEventListener('submit',e=>{
+$("#cartBtn").onclick=()=>drawer(true);$("#closeCart").onclick=()=>drawer(false);$("#overlay").onclick=()=>{drawer(false);checkout(false)};
+$("#checkoutBtn").onclick=()=>{if(!state.cart.length)return toast("Your cart is empty");drawer(false);checkout(true)};
+$("#closeCheckout").onclick=()=>checkout(false);$("#search").oninput=e=>renderProducts(e.target.value);
+$("#checkoutForm").onsubmit=async e=>{
   e.preventDefault();
-  if(!cart.length){alert('Please add at least one product.');return}
-  const sub=cart.reduce((s,i)=>s+money(i.offer)*i.qty,0);
-  const disc=discountAmount(sub);
-  const order={
-    id:'SVP'+Date.now().toString().slice(-8),
-    customerName:document.getElementById('customerName').value.trim(),
-    phone:document.getElementById('phone').value.trim(),
-    address:document.getElementById('address').value.trim(),
-    payment:document.getElementById('payment').value,
-    coupon:activeCoupon?activeCoupon.code:'',
-    items:cart.map(x=>({...x})),
-    subtotal:sub,discount:disc,total:sub-disc,
-    status:'Pending',createdAt:new Date().toLocaleString()
-  };
-  const orders=getOrders();orders.unshift(order);saveOrders(orders);
-  document.getElementById('orderMessage').textContent=`Order ${order.id} placed successfully.`;
-  e.target.reset();cart=[];activeCoupon=null;renderCart();
-  window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
-});
+  const customer=Object.fromEntries(new FormData(e.target).entries());
+  const total=state.cart.reduce((a,b)=>a+(Number(b.offerPrice)*b.qty),0);
+  const order={customer,items:state.cart.map(({id,name,weight,offerPrice,qty})=>({id,name,weight,offerPrice,qty})),total,status:"New",paymentStatus:"Pending",createdAt:serverTimestamp()};
+  try{
+    const ref=await addDoc(collection(db,"orders"),order);
+    state.cart=[];saveCart();renderCart();checkout(false);e.target.reset();
+    toast(`Order placed: ${ref.id.slice(0,8).toUpperCase()}`);
+  }catch(err){console.error(err);toast("Could not place order. Check Firestore rules.");}
+};
+$("#year").textContent=new Date().getFullYear();
 
-renderProducts();renderCart();
+const q=query(collection(db,"products"),orderBy("createdAt","desc"));
+onSnapshot(q,snap=>{
+  state.products=snap.docs.map(d=>({id:d.id,...d.data()}));
+  $("#loading").classList.add("hidden");renderProducts($("#search").value);
+},err=>{
+  console.error(err);$("#loading").textContent="Unable to load products. Check Firebase setup.";
+});
+renderCart();

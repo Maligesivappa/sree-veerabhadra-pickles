@@ -1,99 +1,113 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Sree Veerabhadra Pickles</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="description" content="Traditional homemade pickles delivered across India.">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header class="topbar">
-  <a class="brand" href="index.html">
-    <img src="logo.png" alt="Sree Veerabhadra Pickles">
-    <div>
-      <h1>Sree Veerabhadra Pickles</h1>
-      <p>Traditional taste, homemade with care</p>
-    </div>
-  </a>
-  <a class="admin-link" href="admin.html">Admin Portal</a>
+  <div class="container nav">
+    <a class="brand" href="#home">
+      <img src="assets/logo.jpeg" alt="Sree Veerabhadra Pickles logo">
+      <div><strong>Sree Veerabhadra</strong><span>Pickles</span></div>
+    </a>
+    <nav>
+      <a href="#products">Products</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+      <button id="cartBtn" class="cart-btn">Cart <span id="cartCount">0</span></button>
+    </nav>
+  </div>
 </header>
 
-<section class="hero">
-  <div>
-    <span class="pill">100% Vegetarian • Homemade</span>
-    <h2>Authentic pickles for every meal</h2>
-    <p>Choose your favourite pickle, apply a coupon and place your order online.</p>
-    <a href="#products" class="btn primary">Shop Pickles</a>
+<main>
+<section id="home" class="hero">
+  <div class="container hero-grid">
+    <div>
+      <span class="tag">Traditional taste • Pure delight</span>
+      <h1>Homemade pickles delivered across India.</h1>
+      <p>Authentic flavours prepared with care in Velgode and packed safely for delivery.</p>
+      <div class="actions">
+        <a href="#products" class="btn primary">Shop Pickles</a>
+        <a class="btn secondary" href="https://wa.me/919985222440" target="_blank">WhatsApp</a>
+      </div>
+      <div class="trust"><span>All India delivery</span><span>Cash on Delivery</span><span>UPI coming soon</span></div>
+    </div>
+    <div class="hero-logo"><img src="assets/logo.jpeg" alt="Brand logo"></div>
   </div>
-  <img src="logo.png" alt="Pickle brand logo">
 </section>
 
-<main>
-  <section id="products" class="section">
-    <div class="section-title">
-      <div>
-        <p class="eyebrow">Freshly prepared</p>
-        <h2>Our Products</h2>
-      </div>
-      <span id="productCount"></span>
+<section id="products" class="section">
+  <div class="container">
+    <div class="section-head">
+      <div><span class="tag">Our products</span><h2>Pickles you will love</h2></div>
+      <input id="search" class="search" placeholder="Search products">
     </div>
+    <div id="loading" class="notice">Loading products…</div>
+    <div id="emptyProducts" class="notice hidden">Products will be added soon.</div>
     <div id="productGrid" class="product-grid"></div>
-  </section>
+  </div>
+</section>
 
-  <section class="section order-section">
-    <div class="order-layout">
-      <div>
-        <p class="eyebrow">Quick checkout</p>
-        <h2>Place Your Order</h2>
-        <form id="orderForm">
-          <div class="form-grid">
-            <label>Full name
-              <input id="customerName" required>
-            </label>
-            <label>Phone number
-              <input id="phone" type="tel" required maxlength="10" pattern="[0-9]{10}">
-            </label>
-            <label class="wide">Delivery address
-              <textarea id="address" required></textarea>
-            </label>
-            <label>Payment method
-              <select id="payment">
-                <option>Cash on Delivery</option>
-                <option>UPI</option>
-              </select>
-            </label>
-            <label>Coupon code
-              <div class="coupon-row">
-                <input id="couponCode" placeholder="Example: WELCOME10">
-                <button type="button" class="btn secondary" id="applyCoupon">Apply</button>
-              </div>
-              <small id="couponMessage"></small>
-            </label>
-          </div>
-          <button class="btn primary full" type="submit">Confirm Order</button>
-          <p id="orderMessage" class="success"></p>
-        </form>
-      </div>
-
-      <aside class="cart-panel">
-        <h3>Your Cart</h3>
-        <div id="cartItems" class="cart-items empty">No items added yet.</div>
-        <div class="totals">
-          <div><span>Subtotal</span><strong>₹<span id="subtotal">0</span></strong></div>
-          <div><span>Discount</span><strong>- ₹<span id="discount">0</span></strong></div>
-          <div class="grand"><span>Total</span><strong>₹<span id="grandTotal">0</span></strong></div>
-        </div>
-      </aside>
+<section id="about" class="section soft">
+  <div class="container two-col">
+    <div><span class="tag">About us</span><h2>Made with care in Velgode</h2>
+      <p>Sree Veerabhadra Pickles brings traditional flavours from our kitchen to families across India.</p>
     </div>
-  </section>
+    <div class="features">
+      <article><b>Authentic taste</b><p>Traditional recipes and carefully selected ingredients.</p></article>
+      <article><b>Fresh batches</b><p>Prepared in small quantities for better quality.</p></article>
+      <article><b>Safe packing</b><p>Carefully packed for all-India shipping.</p></article>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="section">
+  <div class="container contact">
+    <div><span class="tag light">Contact</span><h2>Need help?</h2>
+      <p>Opposite Bus Stand, near Rajappa Hospital, Velgode – 518533, Nandyal District, Andhra Pradesh.</p>
+    </div>
+    <div class="actions">
+      <a class="btn white" href="tel:+919985222440">Call 99852 22440</a>
+      <a class="btn outline" href="https://wa.me/919985222440" target="_blank">WhatsApp</a>
+    </div>
+  </div>
+</section>
 </main>
 
-<footer>
-  <img src="logo.png" alt="">
-  <p>© 2026 Sree Veerabhadra Pickles</p>
-</footer>
+<aside id="cartDrawer" class="drawer">
+  <div class="drawer-head"><h3>Your Cart</h3><button id="closeCart">×</button></div>
+  <div id="cartItems" class="cart-items"></div>
+  <div class="drawer-foot">
+    <div class="total"><span>Total</span><strong id="cartTotal">₹0</strong></div>
+    <button id="checkoutBtn" class="btn primary full">Checkout</button>
+  </div>
+</aside>
+<div id="overlay" class="overlay"></div>
 
-<script src="store.js"></script>
-<script src="app.js"></script>
+<div id="checkoutModal" class="modal">
+  <div class="modal-card">
+    <div class="drawer-head"><h3>Checkout</h3><button id="closeCheckout">×</button></div>
+    <form id="checkoutForm" class="form">
+      <label>Full name<input name="name" required></label>
+      <label>Phone number<input name="phone" required pattern="[0-9]{10}" maxlength="10"></label>
+      <label class="wide">Full address<textarea name="address" required></textarea></label>
+      <label>City<input name="city" required></label>
+      <label>PIN code<input name="pincode" required pattern="[0-9]{6}" maxlength="6"></label>
+      <fieldset class="wide"><legend>Payment</legend>
+        <label class="radio"><input type="radio" name="payment" value="Cash on Delivery" checked> Cash on Delivery</label>
+        <label class="radio disabled"><input type="radio" disabled> UPI / QR will be enabled after QR is added</label>
+      </fieldset>
+      <button class="btn primary full" type="submit">Place Order</button>
+    </form>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<footer><div class="container footer"><span>© <span id="year"></span> Sree Veerabhadra Pickles</span><a href="admin.html">Admin Portal</a></div></footer>
+<script type="module" src="app.js"></script>
 </body>
 </html>

@@ -1,95 +1,64 @@
-const PASSWORD='admin123';
-const login=document.getElementById('loginCard');
-const dash=document.getElementById('dashboard');
+import {
+ db,auth,collection,addDoc,doc,updateDoc,deleteDoc,onSnapshot,query,orderBy,serverTimestamp,
+ signInWithEmailAndPassword,signOut,onAuthStateChanged
+} from "./firebase.js";
 
-function openDash(){login.classList.add('hidden');dash.classList.remove('hidden');renderAll()}
-document.getElementById('loginBtn').onclick=()=>{
-  if(document.getElementById('adminPassword').value===PASSWORD){sessionStorage.setItem('svp_admin','yes');openDash()}
-  else document.getElementById('loginMessage').textContent='Wrong password.'
+const $=s=>document.querySelector(s);const money=n=>`₹${Number(n||0).toLocaleString("en-IN")}`;
+let products=[];
+
+$("#loginForm").onsubmit=async e=>{
+ e.preventDefault();const d=Object.fromEntries(new FormData(e.target).entries());
+ try{await signInWithEmailAndPassword(auth,d.email,d.password);$("#loginMessage").textContent=""}
+ catch(err){$("#loginMessage").textContent="Login failed. Enable Email/Password in Firebase Authentication and create the admin user."}
 };
-document.getElementById('logoutBtn').onclick=()=>{sessionStorage.removeItem('svp_admin');location.reload()};
-if(sessionStorage.getItem('svp_admin')==='yes')openDash();
+$("#logoutBtn").onclick=()=>signOut(auth);
 
-document.querySelectorAll('.tab').forEach(btn=>btn.onclick=()=>{
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-  document.querySelectorAll('.tab-panel').forEach(x=>x.classList.add('hidden'));
-  btn.classList.add('active');document.getElementById(btn.dataset.tab).classList.remove('hidden');
+onAuthStateChanged(auth,user=>{
+ $("#loginView").classList.toggle("hidden",!!user);$("#adminView").classList.toggle("hidden",!user);
+ if(user)startAdmin();
 });
 
-function renderAll(){renderOrders();renderAdminProducts();renderCoupons()}
-
-function renderOrders(){
-  const orders=getOrders();
-  document.getElementById('totalOrders').textContent=orders.length;
-  document.getElementById('pendingOrders').textContent=orders.filter(o=>o.status==='Pending').length;
-  document.getElementById('completedOrders').textContent=orders.filter(o=>o.status==='Completed').length;
-  document.getElementById('totalRevenue').textContent=orders.filter(o=>o.status!=='Cancelled').reduce((s,o)=>s+Number(o.total||0),0);
-  const list=document.getElementById('ordersList');
-  list.innerHTML=orders.length?orders.map(o=>`<article class="order-card">
-    <h3>${o.id} • ₹${o.total}</h3>
-    <div class="order-info">
-      <div><strong>Customer:</strong> ${o.customerName}</div>
-      <div><strong>Phone:</strong> ${o.phone}</div>
-      <div><strong>Payment:</strong> ${o.payment}</div>
-      <div><strong>Date:</strong> ${o.createdAt}</div>
-      <div><strong>Coupon:</strong> ${o.coupon||'None'}</div>
-      <div><strong>Discount:</strong> ₹${o.discount||0}</div>
-      <div><strong>Address:</strong> ${o.address}</div>
-      <div><strong>Items:</strong> ${o.items.map(i=>`${i.name} × ${i.qty}`).join(', ')}</div>
-    </div>
-    <div class="order-actions">
-      <select class="status-select" onchange="updateOrder('${o.id}',this.value)">
-        ${['Pending','Confirmed','Packed','Out for Delivery','Completed','Cancelled'].map(s=>`<option ${o.status===s?'selected':''}>${s}</option>`).join('')}
-      </select>
-      <button class="btn danger" onclick="deleteOrder('${o.id}')">Delete</button>
-    </div>
-  </article>`).join(''):`<div class="panel-card">No orders yet.</div>`;
+function startAdmin(){
+ onSnapshot(query(collection(db,"products"),orderBy("createdAt","desc")),snap=>{
+  products=snap.docs.map(d=>({id:d.id,...d.data()}));renderProducts();
+ });
+ onSnapshot(query(collection(db,"orders"),orderBy("createdAt","desc")),snap=>{
+  const orders=snap.docs.map(d=>({id:d.id,...d.data()}));renderOrders(orders);
+ });
 }
-function updateOrder(id,status){const a=getOrders();const o=a.find(x=>x.id===id);if(o)o.status=status;saveOrders(a);renderOrders()}
-function deleteOrder(id){if(confirm('Delete this order?')){saveOrders(getOrders().filter(x=>x.id!==id));renderOrders()}}
 
-function imageToDataURL(file){return new Promise((resolve,reject)=>{if(!file)return resolve('');const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file)})}
+function renderProducts(){
+ $("#productRows").innerHTML=products.length?products.map(p=>`<tr>
+ <td>${p.name||""}</td><td>${p.weight||""}</td><td>${money(p.mrp)}</td><td>${money(p.offerPrice)}</td><td>${p.inStock?"Yes":"No"}</td>
+ <td><button class="small" onclick="editProduct('${p.id}')">Edit</button> <button class="small danger" onclick="removeProduct('${p.id}')">Delete</button></td></tr>`).join(""):`<tr><td colspan="6">No products yet.</td></tr>`;
+}
+window.editProduct=id=>{
+ const p=products.find(x=>x.id===id);if(!p)return;const f=$("#productForm");
+ for(const k of ["id","name","weight","mrp","offerPrice","imageUrl","description"])f.elements[k].value=p[k]??"";
+ f.elements.inStock.value=String(p.inStock!==false);$("#formTitle").textContent="Edit Product";$("#cancelEdit").classList.remove("hidden");scrollTo({top:0,behavior:"smooth"});
+};
+window.removeProduct=async id=>{if(confirm("Delete this product?"))await deleteDoc(doc(db,"products",id))};
 
-document.getElementById('productForm').addEventListener('submit',async e=>{
-  e.preventDefault();
-  const id=document.getElementById('productId').value||'p'+Date.now();
-  const all=getProducts();const old=all.find(x=>x.id===id);
-  const file=document.getElementById('productImage').files[0];
-  const image=file?await imageToDataURL(file):(old?.image||'');
-  const obj={id,name:productName.value.trim(),weight:productWeight.value.trim(),mrp:Number(productMrp.value),offer:Number(productOffer.value),image,stock:productStock.checked};
-  const i=all.findIndex(x=>x.id===id);if(i>=0)all[i]=obj;else all.unshift(obj);
-  saveProducts(all);clearProductForm();renderAdminProducts();
+$("#productForm").onsubmit=async e=>{
+ e.preventDefault();const f=e.target;const d=Object.fromEntries(new FormData(f).entries());
+ const payload={name:d.name.trim(),weight:d.weight.trim(),mrp:Number(d.mrp),offerPrice:Number(d.offerPrice),imageUrl:d.imageUrl.trim(),description:d.description.trim(),inStock:d.inStock==="true",updatedAt:serverTimestamp()};
+ try{
+  if(d.id)await updateDoc(doc(db,"products",d.id),payload);
+  else await addDoc(collection(db,"products"),{...payload,createdAt:serverTimestamp()});
+  resetForm();
+ }catch(err){alert("Could not save. Check Firestore rules and admin login.");console.error(err)}
+};
+$("#cancelEdit").onclick=resetForm;
+function resetForm(){$("#productForm").reset();$("#productForm").elements.id.value="";$("#formTitle").textContent="Add Product";$("#cancelEdit").classList.add("hidden")}
+
+function renderOrders(orders){
+ $("#orderRows").innerHTML=orders.length?orders.map(o=>`<tr>
+ <td>${o.id.slice(0,8).toUpperCase()}</td><td>${o.customer?.name||""}</td><td>${o.customer?.phone||""}</td><td>${money(o.total)}</td><td>${o.customer?.payment||""}</td>
+ <td><select class="status" onchange="changeStatus('${o.id}',this.value)"><option ${o.status==="New"?"selected":""}>New</option><option ${o.status==="Confirmed"?"selected":""}>Confirmed</option><option ${o.status==="Packed"?"selected":""}>Packed</option><option ${o.status==="Shipped"?"selected":""}>Shipped</option><option ${o.status==="Delivered"?"selected":""}>Delivered</option><option ${o.status==="Cancelled"?"selected":""}>Cancelled</option></select></td></tr>`).join(""):`<tr><td colspan="6">No orders yet.</td></tr>`;
+}
+window.changeStatus=async(id,status)=>updateDoc(doc(db,"orders",id),{status,updatedAt:serverTimestamp()});
+
+document.querySelectorAll(".tab").forEach(btn=>btn.onclick=()=>{
+ document.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));btn.classList.add("active");
+ const products=btn.dataset.tab==="products";$("#productsTab").classList.toggle("hidden",!products);$("#ordersTab").classList.toggle("hidden",products);
 });
-function clearProductForm(){productForm.reset();productId.value='';productStock.checked=true;productFormTitle.textContent='Add Product'}
-cancelProductEdit.onclick=clearProductForm;
-function editProduct(id){
-  const p=getProducts().find(x=>x.id===id);if(!p)return;
-  productId.value=p.id;productName.value=p.name;productWeight.value=p.weight;productMrp.value=p.mrp;productOffer.value=p.offer;productStock.checked=p.stock;productFormTitle.textContent='Edit Product';window.scrollTo({top:0,behavior:'smooth'});
-}
-function deleteProduct(id){if(confirm('Delete this product?')){saveProducts(getProducts().filter(x=>x.id!==id));renderAdminProducts()}}
-function renderAdminProducts(){
-  const list=document.getElementById('adminProducts'),items=getProducts();
-  list.innerHTML=items.map(p=>`<div class="list-card">
-    <div class="list-main"><img class="thumb" src="${p.image||placeholder(p.name)}"><div class="grow"><h4>${p.name}</h4><div>${p.weight} • MRP ₹${p.mrp} • Offer ₹${p.offer}</div><span class="badge-status">${p.stock?'In stock':'Out of stock'}</span></div></div>
-    <div class="button-row"><button class="btn secondary" onclick="editProduct('${p.id}')">Edit</button><button class="btn danger" onclick="deleteProduct('${p.id}')">Delete</button></div>
-  </div>`).join('');
-}
-
-document.getElementById('couponForm').addEventListener('submit',e=>{
-  e.preventDefault();
-  const id=couponId.value||'c'+Date.now(),all=getCoupons();
-  const obj={id,code:couponCodeAdmin.value.trim().toUpperCase(),type:couponType.value,value:Number(couponValue.value),minimum:Number(couponMinimum.value||0),maximum:Number(couponMaximum.value||0),expiry:couponExpiry.value,active:couponActive.checked};
-  const i=all.findIndex(x=>x.id===id);if(i>=0)all[i]=obj;else all.unshift(obj);
-  saveCoupons(all);clearCouponForm();renderCoupons();
-});
-function clearCouponForm(){couponForm.reset();couponId.value='';couponActive.checked=true;couponMinimum.value=0;couponMaximum.value=0;couponFormTitle.textContent='Add Coupon'}
-cancelCouponEdit.onclick=clearCouponForm;
-function editCoupon(id){
-  const c=getCoupons().find(x=>x.id===id);if(!c)return;
-  couponId.value=c.id;couponCodeAdmin.value=c.code;couponType.value=c.type;couponValue.value=c.value;couponMinimum.value=c.minimum;couponMaximum.value=c.maximum;couponExpiry.value=c.expiry||'';couponActive.checked=c.active;couponFormTitle.textContent='Edit Coupon';
-}
-function deleteCoupon(id){if(confirm('Delete this coupon?')){saveCoupons(getCoupons().filter(x=>x.id!==id));renderCoupons()}}
-function renderCoupons(){
-  const list=document.getElementById('adminCoupons'),items=getCoupons();
-  list.innerHTML=items.length?items.map(c=>`<div class="list-card"><h4>${c.code}</h4><div>${c.type==='percent'?c.value+'%':'₹'+c.value} off • Minimum ₹${c.minimum||0}${c.maximum?` • Max ₹${c.maximum}`:''}</div><span class="badge-status">${c.active?'Active':'Inactive'}${c.expiry?' • Expires '+c.expiry:''}</span><div class="button-row"><button class="btn secondary" onclick="editCoupon('${c.id}')">Edit</button><button class="btn danger" onclick="deleteCoupon('${c.id}')">Delete</button></div></div>`).join(''):'No coupons added.';
-}
