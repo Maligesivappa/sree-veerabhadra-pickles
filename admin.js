@@ -53,7 +53,7 @@ function resetForm(){$("#productForm").reset();$("#productForm").elements.id.val
 
 function renderOrders(orders){
  $("#orderRows").innerHTML=orders.length?orders.map(o=>`<tr>
- <td>${o.id.slice(0,8).toUpperCase()}</td><td>${o.customer?.name||""}</td><td>${o.customer?.phone||""}</td><td>${money(o.total)}</td><td>${o.customer?.payment||""}</td>
+ <td>${o.customer?.phone||""}</td><td>${o.customer?.address||""}, ${o.customer?.city||""} - ${o.customer?.pincode||""}</td><td>${money(o.total)}</td>
  <td><select class="status" onchange="changeStatus('${o.id}',this.value)"><option ${o.status==="New"?"selected":""}>New</option><option ${o.status==="Confirmed"?"selected":""}>Confirmed</option><option ${o.status==="Packed"?"selected":""}>Packed</option><option ${o.status==="Shipped"?"selected":""}>Shipped</option><option ${o.status==="Delivered"?"selected":""}>Delivered</option><option ${o.status==="Cancelled"?"selected":""}>Cancelled</option></select></td></tr>`).join(""):`<tr><td colspan="6">No orders yet.</td></tr>`;
 }
 window.changeStatus=async(id,status)=>updateDoc(doc(db,"orders",id),{status,updatedAt:serverTimestamp()});
