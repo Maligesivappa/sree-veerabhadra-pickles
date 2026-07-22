@@ -1,5 +1,13 @@
-import { db, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "./firebase.js";
-
+import {
+  auth,
+  db,
+  collection,
+  addDoc,
+  onSnapshot,
+  query,
+  orderBy,
+  serverTimestamp
+} from "./firebase.js";
 const state={products:[],cart:JSON.parse(localStorage.getItem("svp_cart")||"[]")};
 const $=s=>document.querySelector(s);
 const money=n=>`₹${Number(n||0).toLocaleString("en-IN")}`;
@@ -48,9 +56,36 @@ $("#checkoutBtn").onclick=()=>{if(!state.cart.length)return toast("Your cart is 
 $("#closeCheckout").onclick=()=>checkout(false);$("#search").oninput=e=>renderProducts(e.target.value);
 $("#checkoutForm").onsubmit=async e=>{
   e.preventDefault();
-  const customer=Object.fromEntries(new FormData(e.target).entries());
-  const total=state.cart.reduce((a,b)=>a+(Number(b.offerPrice)*b.qty),0);
-  const order={customer,items:state.cart.map(({id,name,weight,offerPrice,qty})=>({id,name,weight,offerPrice,qty})),total,status:"New",paymentStatus:"Pending",createdAt:serverTimestamp()};
+  const customer = Object.fromEntries(new FormData(e.target).entries());
+const total = state.cart.reduce(
+  (a, b) => a + (Number(b.offerPrice) * b.qty),
+  0
+);
+
+const user = auth.currentUser;
+
+if (!user) {
+  toast("Please login before placing an order.");
+  window.location.href = "login.html";
+  return;
+}
+
+const order = {
+  userId: user.uid,
+  customerEmail: user.email,
+  customer,
+  items: state.cart.map(({ id, name, weight, offerPrice, qty }) => ({
+    id,
+    name,
+    weight,
+    offerPrice,
+    qty
+  })),
+  total,
+  status: "New",
+  paymentStatus: "Pending",
+  createdAt: serverTimestamp()
+};
   try{
     const ref=await addDoc(collection(db,"orders"),order);
     state.cart=[];saveCart();renderCart();checkout(false);e.target.reset();
