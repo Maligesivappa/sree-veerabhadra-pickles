@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Create Account | Sree Veerabhadra Pickles</title>
+
+<style>
+body{
+font-family:Arial,sans-serif;
+background:#f7f2e8;
+margin:0;
+}
+
+.container{
+max-width:420px;
+margin:50px auto;
+background:white;
+padding:25px;
+border-radius:12px;
+box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+h2{
+text-align:center;
+color:#14532d;
+}
+
+input{
+width:100%;
+padding:12px;
+margin:8px 0;
+border:1px solid #ccc;
+border-radius:8px;
+box-sizing:border-box;
+}
+
+button{
+width:100%;
+padding:12px;
+background:#14532d;
+color:white;
+border:none;
+border-radius:8px;
+font-size:16px;
+cursor:pointer;
+}
+
+button:hover{
+background:#0f4224;
+}
+
+#message{
+margin-top:15px;
+text-align:center;
+}
+
+a{
+color:#14532d;
+text-decoration:none;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Create Account</h2>
+
+<form id="registerForm">
+
+<input
+type="text"
+id="name"
+placeholder="Full Name"
+required>
+
+<input
+type="email"
+id="email"
+placeholder="Email"
+required>
+
+<input
+type="tel"
+id="phone"
+placeholder="Phone Number"
+required>
+
+<input
+type="password"
+id="password"
+placeholder="Password"
+required>
+
+<button>Create Account</button>
+
+</form>
+
+<div id="message"></div>
+
+<p align="center">
+
+Already have an account?
+
+<a href="login.html">Login</a>
+
+</p>
+
+</div>
+
+<script type="module" src="register.js"></script>
+
+</body>
+</html>
