@@ -1,154 +1,368 @@
 import {
- db,auth,collection,addDoc,doc,updateDoc,deleteDoc,onSnapshot,query,orderBy,serverTimestamp,
- signInWithEmailAndPassword,signOut,onAuthStateChanged
+  db,
+  auth,
+  collection,
+  addDoc,
+  doc,
+  updateDoc,
+  deleteDoc,
+  onSnapshot,
+  query,
+  orderBy,
+  serverTimestamp,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
 } from "./firebase.js";
 
-const $=s=>document.querySelector(s);const money=n=>`₹${Number(n||0).toLocaleString("en-IN")}`;
-let products=[];
+const $ = (selector) => document.querySelector(selector);
+const money = (amount) =>
+  `₹${Number(amount || 0).toLocaleString("en-IN")}`;
 
-$("#loginForm").onsubmit=async e=>{
- e.preventDefault();const d=Object.fromEntries(new FormData(e.target).entries());
- try{await signInWithEmailAndPassword(auth,d.email,d.password);$("#loginMessage").textContent=""}
- catch(err){$("#loginMessage").textContent="Login failed. Enable Email/Password in Firebase Authentication and create the admin user."}
-};
-$("#logoutBtn").onclick=()=>signOut(auth);
+let products = [];
+let orders = [];
+let adminStarted = false;
 
-onAuthStateChanged(auth,user=>{
- $("#loginView").classList.toggle("hidden",!!user);$("#adminView").classList.toggle("hidden",!user);
- if(user)startAdmin();
+$("#loginForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const data = Object.fromEntries(new FormData(event.target).entries());
+
+  try {
+    await signInWithEmailAndPassword(auth, data.email, data.password);
+    $("#loginMessage").textContent = "";
+  } catch (error) {
+    console.error("Admin login error:", error);
+    $("#loginMessage").textContent =
+      "Login failed. Check the email, password and Firebase Authentication.";
+  }
 });
 
-function startAdmin(){
- onSnapshot(query(collection(db,"products"),orderBy("createdAt","desc")),snap=>{
-  products=snap.docs.map(d=>({id:d.id,...d.data()}));renderProducts();
- });
- onSnapshot(query(collection(db,"orders"),orderBy("createdAt","desc")),snap=>{
-  const orders=snap.docs.map(d=>({id:d.id,...d.data()}));renderOrders(orders);
- });
+$("#logoutBtn").addEventListener("click", async () => {
+  try {
+    await signOut(auth);
+  } catch (error) {
+    console.error("Logout error:", error);
+    alert("Could not log out.");
+  }
+});
+
+onAuthStateChanged(auth, (user) => {
+  $("#loginView").classList.toggle("hidden", Boolean(user));
+  $("#adminView").classList.toggle("hidden", !user);
+
+  if (user && !adminStarted) {
+    adminStarted = true;
+    startAdmin();
+  }
+
+  if (!user) {
+    adminStarted = false;
+  }
+});
+
+function startAdmin() {
+  onSnapshot(
+    query(collection(db, "products"), orderBy("createdAt", "desc")),
+    (snapshot) => {
+      products = snapshot.docs.map((productDocument) => ({
+        id: productDocument.id,
+        ...productDocument.data()
+      }));
+
+      renderProducts();
+    },
+    (error) => {
+      console.error("Products listener error:", error);
+      $("#productRows").innerHTML =
+        `<tr><td colspan="6">Could not load products.</td></tr>`;
+    }
+  );
+
+  onSnapshot(
+    query(collection(db, "orders"), orderBy("createdAt", "desc")),
+    (snapshot) => {
+      orders = snapshot.docs.map((orderDocument) => ({
+        id: orderDocument.id,
+        ...orderDocument.data()
+      }));
+
+      updateDashboard(orders);
+      applyOrderFilters();
+    },
+    (error) => {
+      console.error("Orders listener error:", error);
+      $("#orderRows").innerHTML =
+        `<tr><td colspan="10">Could not load orders.</td></tr>`;
+    }
+  );
 }
 
-function renderProducts(){
- $("#productRows").innerHTML=products.length?products.map(p=>`<tr>
- <td>${p.name||""}</td><td>${p.weight||""}</td><td>${money(p.mrp)}</td><td>${money(p.offerPrice)}</td><td>${p.inStock?"Yes":"No"}</td>
- <td><button class="small" onclick="editProduct('${p.id}')">Edit</button> <button class="small danger" onclick="removeProduct('${p.id}')">Delete</button></td></tr>`).join(""):`<tr><td colspan="6">No products yet.</td></tr>`;
-}
-window.editProduct=id=>{
- const p=products.find(x=>x.id===id);if(!p)return;const f=$("#productForm");
- for(const k of ["id","name","weight","mrp","offerPrice","imageUrl","description"])f.elements[k].value=p[k]??"";
- f.elements.inStock.value=String(p.inStock!==false);$("#formTitle").textContent="Edit Product";$("#cancelEdit").classList.remove("hidden");scrollTo({top:0,behavior:"smooth"});
-};
-window.removeProduct=async id=>{if(confirm("Delete this product?"))await deleteDoc(doc(db,"products",id))};
-
-$("#productForm").onsubmit=async e=>{
- e.preventDefault();const f=e.target;const d=Object.fromEntries(new FormData(f).entries());
- const payload={name:d.name.trim(),weight:d.weight.trim(),mrp:Number(d.mrp),offerPrice:Number(d.offerPrice),imageUrl:d.imageUrl.trim(),description:d.description.trim(),inStock:d.inStock==="true",updatedAt:serverTimestamp()};
- try{
-  if(d.id)await updateDoc(doc(db,"products",d.id),payload);
-  else await addDoc(collection(db,"products"),{...payload,createdAt:serverTimestamp()});
-  resetForm();
- }catch(err){alert("Could not save. Check Firestore rules and admin login.");console.error(err)}
-};
-$("#cancelEdit").onclick=resetForm;
-function resetForm(){$("#productForm").reset();$("#productForm").elements.id.value="";$("#formTitle").textContent="Add Product";$("#cancelEdit").classList.add("hidden")}
-
-function renderOrders(orders) {
-  $("#orderRows").innerHTML = orders.length
-    ? orders.map(o => `
+function renderProducts() {
+  $("#productRows").innerHTML = products.length
+    ? products.map((product) => `
       <tr>
-        <td>${o.id.slice(0, 8).toUpperCase()}</td>
-
-        <td>${o.customer?.name || ""}</td>
-
-        <td>${o.customer?.phone || ""}</td>
-
+        <td>${escapeHtml(product.name || "")}</td>
+        <td>${escapeHtml(product.weight || "")}</td>
+        <td>${money(product.mrp)}</td>
+        <td>${money(product.offerPrice)}</td>
+        <td>${product.inStock ? "Yes" : "No"}</td>
         <td>
-          ${o.customer?.address || ""},
-          ${o.customer?.city || ""} -
-          ${o.customer?.pincode || ""}
-        </td>
-
-        <td>${money(o.total)}</td>
-
-        <td>
-          <strong>${o.paymentMethod || o.customer?.payment || "Cash on Delivery"}</strong>
-          <br>
-          <small>${o.paymentStatus || "Pending"}</small>
-
-          ${
-            o.paymentMethod === "UPI" && o.transactionId
-              ? `<br><small>Txn: ${o.transactionId}</small>`
-              : ""
-          }
-        </td>
-
-        <td>
-          <select
-            class="status"
-            onchange="changeStatus('${o.id}', this.value)"
-          >
-            <option ${o.status === "New" ? "selected" : ""}>New</option>
-            <option ${o.status === "Confirmed" ? "selected" : ""}>Confirmed</option>
-            <option ${o.status === "Packed" ? "selected" : ""}>Packed</option>
-            <option ${o.status === "Shipped" ? "selected" : ""}>Shipped</option>
-            <option ${o.status === "Delivered" ? "selected" : ""}>Delivered</option>
-            <option ${o.status === "Cancelled" ? "selected" : ""}>Cancelled</option>
-          </select>
-        </td>
-
-        <td>
-          <input
-            id="courier-${o.id}"
-            class="status"
-            type="text"
-            placeholder="Courier name"
-            value="${o.courierName || ""}"
-          >
-        </td>
-
-        <td>
-          <input
-            id="awb-${o.id}"
-            class="status"
-            type="text"
-            placeholder="AWB number"
-            value="${o.awbNumber || ""}"
-          >
-        </td>
-
-        <td>
-          <input
-            id="tracking-${o.id}"
-            class="status"
-            type="url"
-            placeholder="Tracking link"
-            value="${o.trackingLink || ""}"
-          >
-
-          <button
-            class="small"
-            onclick="saveTracking('${o.id}')"
-          >
-            Save
+          <button class="small" onclick="editProduct('${product.id}')">
+            Edit
           </button>
-
-          ${
-            o.trackingLink
-              ? `
-                <a
-                  class="small"
-                  href="${o.trackingLink}"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Track
-                </a>
-              `
-              : ""
-          }
+          <button class="small danger" onclick="removeProduct('${product.id}')">
+            Delete
+          </button>
         </td>
       </tr>
     `).join("")
-    : `<tr><td colspan="10">No orders yet.</td></tr>`;
+    : `<tr><td colspan="6">No products yet.</td></tr>`;
+}
+
+window.editProduct = (id) => {
+  const product = products.find((item) => item.id === id);
+  if (!product) return;
+
+  const form = $("#productForm");
+
+  for (const key of [
+    "id",
+    "name",
+    "weight",
+    "mrp",
+    "offerPrice",
+    "imageUrl",
+    "description"
+  ]) {
+    form.elements[key].value = product[key] ?? "";
+  }
+
+  form.elements.inStock.value = String(product.inStock !== false);
+  $("#formTitle").textContent = "Edit Product";
+  $("#cancelEdit").classList.remove("hidden");
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
+window.removeProduct = async (id) => {
+  if (!confirm("Delete this product?")) return;
+
+  try {
+    await deleteDoc(doc(db, "products", id));
+  } catch (error) {
+    console.error("Delete product error:", error);
+    alert("Could not delete product.");
+  }
+};
+
+$("#productForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const form = event.target;
+  const data = Object.fromEntries(new FormData(form).entries());
+
+  const payload = {
+    name: data.name.trim(),
+    weight: data.weight.trim(),
+    mrp: Number(data.mrp),
+    offerPrice: Number(data.offerPrice),
+    imageUrl: data.imageUrl.trim(),
+    description: data.description.trim(),
+    inStock: data.inStock === "true",
+    updatedAt: serverTimestamp()
+  };
+
+  try {
+    if (data.id) {
+      await updateDoc(doc(db, "products", data.id), payload);
+    } else {
+      await addDoc(collection(db, "products"), {
+        ...payload,
+        createdAt: serverTimestamp()
+      });
+    }
+
+    resetForm();
+  } catch (error) {
+    console.error("Save product error:", error);
+    alert("Could not save product. Check Firestore rules and admin login.");
+  }
+});
+
+$("#cancelEdit").addEventListener("click", resetForm);
+
+function resetForm() {
+  $("#productForm").reset();
+  $("#productForm").elements.id.value = "";
+  $("#formTitle").textContent = "Add Product";
+  $("#cancelEdit").classList.add("hidden");
+}
+
+function updateDashboard(allOrders) {
+  const totalOrders = allOrders.length;
+
+  const totalSales = allOrders
+    .filter((order) => order.status !== "Cancelled")
+    .reduce((sum, order) => sum + Number(order.total || 0), 0);
+
+  const pendingShipments = allOrders.filter((order) =>
+    ["New", "Confirmed", "Packed"].includes(order.status || "New")
+  ).length;
+
+  const deliveredOrders = allOrders.filter(
+    (order) => order.status === "Delivered"
+  ).length;
+
+  $("#totalOrders").textContent = totalOrders;
+  $("#totalSales").textContent = money(totalSales);
+  $("#pendingShipments").textContent = pendingShipments;
+  $("#deliveredOrders").textContent = deliveredOrders;
+}
+
+function applyOrderFilters() {
+  const searchText = ($("#orderSearch")?.value || "").trim().toLowerCase();
+  const selectedStatus = $("#statusFilter")?.value || "All";
+
+  const filteredOrders = orders.filter((order) => {
+    const searchableText = [
+      order.id,
+      order.customer?.name,
+      order.customer?.phone,
+      order.customerEmail
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    const matchesSearch =
+      !searchText || searchableText.includes(searchText);
+
+    const orderStatus = order.status || "New";
+    const matchesStatus =
+      selectedStatus === "All" || orderStatus === selectedStatus;
+
+    return matchesSearch && matchesStatus;
+  });
+
+  renderOrders(filteredOrders);
+  $("#orderCount").textContent =
+    `${filteredOrders.length} order${filteredOrders.length === 1 ? "" : "s"}`;
+}
+
+function renderOrders(filteredOrders) {
+  $("#orderRows").innerHTML = filteredOrders.length
+    ? filteredOrders.map((order) => {
+      const orderId = order.id.slice(0, 8).toUpperCase();
+      const paymentMethod =
+        order.paymentMethod ||
+        order.customer?.payment ||
+        "Cash on Delivery";
+
+      const paymentStatus =
+        paymentMethod === "Cash on Delivery"
+          ? (order.paymentStatus || "Pay on Delivery")
+          : (order.paymentStatus || "Verification Pending");
+
+      return `
+        <tr>
+          <td>${orderId}</td>
+          <td>${escapeHtml(order.customer?.name || "")}</td>
+          <td>${escapeHtml(order.customer?.phone || "")}</td>
+
+          <td class="address-cell">
+            ${escapeHtml(order.customer?.address || "")},
+            ${escapeHtml(order.customer?.city || "")} -
+            ${escapeHtml(order.customer?.pincode || "")}
+          </td>
+
+          <td>${money(order.total)}</td>
+
+          <td>
+            <strong>${escapeHtml(paymentMethod)}</strong><br>
+            <small>${escapeHtml(paymentStatus)}</small>
+            ${
+              paymentMethod === "UPI" && order.transactionId
+                ? `<br><small>Txn: ${escapeHtml(order.transactionId)}</small>`
+                : ""
+            }
+          </td>
+
+          <td>
+            <select
+              class="status"
+              onchange="changeStatus('${order.id}', this.value)"
+            >
+              ${statusOptions(order.status || "New")}
+            </select>
+          </td>
+
+          <td>
+            <input
+              id="courier-${order.id}"
+              class="tracking-input"
+              type="text"
+              placeholder="Courier name"
+              value="${escapeAttribute(order.courierName || "")}"
+            >
+          </td>
+
+          <td>
+            <input
+              id="awb-${order.id}"
+              class="tracking-input"
+              type="text"
+              placeholder="AWB number"
+              value="${escapeAttribute(order.awbNumber || "")}"
+            >
+          </td>
+
+          <td>
+            <input
+              id="tracking-${order.id}"
+              class="tracking-input"
+              type="url"
+              placeholder="Tracking link"
+              value="${escapeAttribute(order.trackingLink || "")}"
+            >
+            <br>
+
+            <button
+              class="small"
+              onclick="saveTracking('${order.id}')"
+            >
+              Save
+            </button>
+
+            ${
+              order.trackingLink
+                ? `
+                  <a
+                    class="small"
+                    href="${escapeAttribute(order.trackingLink)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Track
+                  </a>
+                `
+                : ""
+            }
+          </td>
+        </tr>
+      `;
+    }).join("")
+    : `<tr><td colspan="10">No matching orders.</td></tr>`;
+}
+
+function statusOptions(currentStatus) {
+  return ["New", "Confirmed", "Packed", "Shipped", "Delivered", "Cancelled"]
+    .map((status) =>
+      `<option value="${status}" ${currentStatus === status ? "selected" : ""}>
+        ${status}
+      </option>`
+    )
+    .join("");
 }
 
 window.changeStatus = async (id, status) => {
@@ -158,12 +372,12 @@ window.changeStatus = async (id, status) => {
       updatedAt: serverTimestamp()
     });
   } catch (error) {
-    console.error(error);
+    console.error("Update status error:", error);
     alert("Could not update order status.");
   }
 };
 
-window.saveTracking = async id => {
+window.saveTracking = async (id) => {
   const courierName =
     document.getElementById(`courier-${id}`).value.trim();
 
@@ -199,13 +413,14 @@ window.saveTracking = async id => {
 
     alert("Tracking details saved successfully.");
   } catch (error) {
-    console.error(error);
+    console.error("Save tracking error:", error);
     alert("Could not save tracking details.");
   }
 };
-document.querySelectorAll(".tab").forEach(button => {
+
+document.querySelectorAll(".tab").forEach((button) => {
   button.addEventListener("click", () => {
-    document.querySelectorAll(".tab").forEach(tab => {
+    document.querySelectorAll(".tab").forEach((tab) => {
       tab.classList.remove("active");
     });
 
@@ -213,12 +428,30 @@ document.querySelectorAll(".tab").forEach(button => {
 
     const selectedTab = button.dataset.tab;
 
-    document
-      .getElementById("productsTab")
-      .classList.toggle("hidden", selectedTab !== "products");
+    $("#productsTab").classList.toggle(
+      "hidden",
+      selectedTab !== "products"
+    );
 
-    document
-      .getElementById("ordersTab")
-      .classList.toggle("hidden", selectedTab !== "orders");
+    $("#ordersTab").classList.toggle(
+      "hidden",
+      selectedTab !== "orders"
+    );
   });
 });
+
+$("#orderSearch").addEventListener("input", applyOrderFilters);
+$("#statusFilter").addEventListener("change", applyOrderFilters);
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function escapeAttribute(value) {
+  return escapeHtml(value).replaceAll("`", "&#096;");
+}
