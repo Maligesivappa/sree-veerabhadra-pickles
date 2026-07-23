@@ -88,10 +88,59 @@ function displayOrders(orders) {
           <strong>Total:</strong> ${money(order.total)}
         </p>
 
+  <p>
+  <strong>Payment Method:</strong>
+  ${order.paymentMethod || order.customer?.payment || "Cash on Delivery"}
+</p>
+
+<p>
+  <strong>Payment Status:</strong>
+  ${order.paymentStatus || "Pending"}
+</p>
+
+${
+  order.paymentMethod === "UPI" && order.transactionId
+    ? `
+      <p>
+        <strong>Transaction ID:</strong>
+        ${order.transactionId}
+      </p>
+    `
+    : ""
+}
+
+${
+  order.courierName || order.awbNumber || order.trackingLink
+    ? `
+      <div class="tracking-details">
         <p>
-          <strong>Payment:</strong>
-          ${order.customer?.payment || "Cash on Delivery"}
+          <strong>Courier:</strong>
+          ${order.courierName || "Not assigned"}
         </p>
+
+        <p>
+          <strong>AWB Number:</strong>
+          ${order.awbNumber || "Not available"}
+        </p>
+
+        ${
+          order.trackingLink
+            ? `
+              <a
+                href="${order.trackingLink}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn primary"
+              >
+                Track Shipment
+              </a>
+            `
+            : ""
+        }
+      </div>
+    `
+    : ""
+}
       </article>
     `;
   }).join("");
