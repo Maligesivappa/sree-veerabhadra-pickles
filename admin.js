@@ -51,47 +51,110 @@ $("#productForm").onsubmit=async e=>{
 $("#cancelEdit").onclick=resetForm;
 function resetForm(){$("#productForm").reset();$("#productForm").elements.id.value="";$("#formTitle").textContent="Add Product";$("#cancelEdit").classList.add("hidden")}
 
-function renderOrders(orders){
-  $("#orderRows").innerHTML = orders.length ? orders.map(o => `
-    <tr>
-      <td>${o.id.slice(0,8).toUpperCase()}</td>
-      <td>${o.customer?.name || ""}</td>
-      <td>${o.customer?.phone || ""}</td>
-      <td>${o.customer?.address || ""}, ${o.customer?.city || ""} - ${o.customer?.pincode || ""}</td>
-      <td>${money(o.total)}</td>
-      <td>
-  <strong>${o.paymentMethod || "Cash on Delivery"}</strong><br>
-  <small>
-${
-  o.paymentMethod === "Cash on Delivery"
-    ? "Pay on Delivery"
-    : (o.paymentStatus || "Verification Pending")
-}
-</small>
-  ${
-    o.paymentMethod === "UPI" && o.transactionId
-      ? `<br><small>Txn: ${o.transactionId}</small>`
-      : ""
-  }
-</td>
-      <td>
-        <select class="status" onchange="changeStatus('${o.id}',this.value)">
-          <option ${o.status==="New"?"selected":""}>New</option>
-          <option ${o.status==="Confirmed"?"selected":""}>Confirmed</option>
-          <option ${o.status==="Packed"?"selected":""}>Packed</option>
-          <option ${o.status==="Shipped"?"selected":""}>Shipped</option>
-          <option ${o.status==="Delivered"?"selected":""}>Delivered</option>
-          <option ${o.status==="Cancelled"?"selected":""}>Cancelled</option>
-        </select>
-      </td>
-    </tr>
-  `).join("") : '<tr><td colspan="7">No orders yet.</td></tr>';
+function renderOrders(orders) {
+  $("#orderRows").innerHTML = orders.length
+    ? orders.map(o => `
+      <tr>
+        <td>${o.id.slice(0, 8).toUpperCase()}</td>
+
+        <td>${o.customer?.name || ""}</td>
+
+        <td>${o.customer?.phone || ""}</td>
+
+        <td>
+          ${o.customer?.address || ""},
+          ${o.customer?.city || ""} -
+          ${o.customer?.pincode || ""}
+        </td>
+
+        <td>${money(o.total)}</td>
+
+        <td>
+          <strong>${o.paymentMethod || o.customer?.payment || "Cash on Delivery"}</strong>
+          <br>
+          <small>${o.paymentStatus || "Pending"}</small>
+
+          ${
+            o.paymentMethod === "UPI" && o.transactionId
+              ? `<br><small>Txn: ${o.transactionId}</small>`
+              : ""
+          }
+        </td>
+
+        <td>
+          <select
+            class="status"
+            onchange="changeStatus('${o.id}', this.value)"
+          >
+            <option ${o.status === "New" ? "selected" : ""}>New</option>
+            <option ${o.status === "Confirmed" ? "selected" : ""}>Confirmed</option>
+            <option ${o.status === "Packed" ? "selected" : ""}>Packed</option>
+            <option ${o.status === "Shipped" ? "selected" : ""}>Shipped</option>
+            <option ${o.status === "Delivered" ? "selected" : ""}>Delivered</option>
+            <option ${o.status === "Cancelled" ? "selected" : ""}>Cancelled</option>
+          </select>
+        </td>
+
+        <td>
+          <input
+            id="courier-${o.id}"
+            class="status"
+            type="text"
+            placeholder="Courier name"
+            value="${o.courierName || ""}"
+          >
+        </td>
+
+        <td>
+          <input
+            id="awb-${o.id}"
+            class="status"
+            type="text"
+            placeholder="AWB number"
+            value="${o.awbNumber || ""}"
+          >
+        </td>
+
+        <td>
+          <input
+            id="tracking-${o.id}"
+            class="status"
+            type="url"
+            placeholder="Tracking link"
+            value="${o.trackingLink || ""}"
+          >
+
+          <button
+            class="small"
+            onclick="saveTracking('${o.id}')"
+          >
+            Save
+          </button>
+
+          ${
+            o.trackingLink
+              ? `
+                <a
+                  class="small"
+                  href="${o.trackingLink}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Track
+                </a>
+              `
+              : ""
+          }
+        </td>
+      </tr>
+    `).join("")
+    : `<tr><td colspan="10">No orders yet.</td></tr>`;
 }
 
 window.changeStatus = async (id, status) => {
   try {
     await updateDoc(doc(db, "orders", id), {
-      status: status,
+      status,
       updatedAt: serverTimestamp()
     });
   } catch (error) {
@@ -100,20 +163,43 @@ window.changeStatus = async (id, status) => {
   }
 };
 
-document.querySelectorAll(".tab").forEach((tab) => {
-  tab.onclick = () => {
-    document.querySelectorAll(".tab").forEach((item) => {
-      item.classList.remove("active");
+window.saveTracking = async id => {
+  const courierName =
+    document.getElementById(`courier-${id}`).value.trim();
+
+  const awbNumber =
+    document.getElementById(`awb-${id}`).value.trim();
+
+  const trackingLink =
+    document.getElementById(`tracking-${id}`).value.trim();
+
+  if (!courierName || !awbNumber) {
+    alert("Please enter the courier name and AWB number.");
+    return;
+  }
+
+  if (
+    trackingLink &&
+    !trackingLink.startsWith("https://") &&
+    !trackingLink.startsWith("http://")
+  ) {
+    alert("Tracking link must begin with https://");
+    return;
+  }
+
+  try {
+    await updateDoc(doc(db, "orders", id), {
+      courierName,
+      awbNumber,
+      trackingLink,
+      status: "Shipped",
+      trackingUpdatedAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
     });
 
-    tab.classList.add("active");
-
-    if (tab.dataset.tab === "products") {
-      $("#productsTab").classList.remove("hidden");
-      $("#ordersTab").classList.add("hidden");
-    } else {
-      $("#ordersTab").classList.remove("hidden");
-      $("#productsTab").classList.add("hidden");
-    }
-  };
-});
+    alert("Tracking details saved successfully.");
+  } catch (error) {
+    console.error(error);
+    alert("Could not save tracking details.");
+  }
+};
