@@ -203,3 +203,22 @@ window.saveTracking = async id => {
     alert("Could not save tracking details.");
   }
 };
+document.querySelectorAll(".tab").forEach(button => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.classList.remove("active");
+    });
+
+    button.classList.add("active");
+
+    const selectedTab = button.dataset.tab;
+
+    document
+      .getElementById("productsTab")
+      .classList.toggle("hidden", selectedTab !== "products");
+
+    document
+      .getElementById("ordersTab")
+      .classList.toggle("hidden", selectedTab !== "orders");
+  });
+});
