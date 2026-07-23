@@ -43,7 +43,31 @@ body{background:#f6f1e7}.admin{width:min(1180px,94%);margin:28px auto}.top{displ
     <div class="panel"><h3>Products</h3><div class="table-wrap"><table><thead><tr><th>Name</th><th>Weight</th><th>MRP</th><th>Offer</th><th>Stock</th><th>Actions</th></tr></thead><tbody id="productRows"></tbody></table></div></div>
   </div>
 
-  <div id="ordersTab" class="panel hidden"><h3>Orders</h3><div class="table-wrap"><table><thead><tr><th>Order ID</th><th>Customer</th><th>Phone</th><th>Address</th><th>Total</th><th>Payment</th> <th>Status</th> <th>Courier</th> <th>AWB Number</th> <th>Tracking</th></tr></thead><tbody id="orderRows"></tbody></table></div></div>
+  <div id="ordersTab" class="panel hidden">
+  <h3>Orders</h3>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Customer</th>
+          <th>Phone</th>
+          <th>Address</th>
+          <th>Total</th>
+          <th>Payment</th>
+          <th>Status</th>
+          <th>Courier</th>
+          <th>AWB Number</th>
+          <th>Tracking</th>
+        </tr>
+      </thead>
+
+      <tbody id="orderRows"></tbody>
+
+    </table>
+  </div>
+</div>
 </section>
 <script type="module" src="admin.js?v=4"></script>
 </body>
