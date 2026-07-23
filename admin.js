@@ -61,7 +61,13 @@ function renderOrders(orders){
       <td>${money(o.total)}</td>
       <td>
   <strong>${o.paymentMethod || "Cash on Delivery"}</strong><br>
-  <small>${o.paymentStatus || "Pending"}</small>
+  <small>
+${
+  o.paymentMethod === "Cash on Delivery"
+    ? "Pay on Delivery"
+    : (o.paymentStatus || "Verification Pending")
+}
+</small>
   ${
     o.paymentMethod === "UPI" && o.transactionId
       ? `<br><small>Txn: ${o.transactionId}</small>`
