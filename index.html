@@ -1,84 +1,1705 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Sree Veerabhadra Pickles</title>
-  <meta name="description" content="Traditional homemade pickles prepared in Velgode and delivered across India. Shipping charges apply.">
-  <link rel="stylesheet" href="styles.css?v=8">
-  <link rel="stylesheet" href="styles-premium-additions.css?v=1">
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="Shop authentic homemade Andhra pickles from Sree Veerabhadra Pickles. Traditional taste, carefully prepared and delivered across India."
+  >
+
+  <meta
+    name="keywords"
+    content="Andhra pickles, homemade pickles, mango pickle, tomato pickle, gongura pickle, Indian pickles, Sree Veerabhadra Pickles"
+  >
+
+  <meta name="theme-color" content="#7c2115">
+
+  <title>Sree Veerabhadra Pickles | Authentic Andhra Pickles</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- Main stylesheet -->
+  <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-<header class="topbar"><div class="container nav">
-  <a class="brand" href="#home"><img src="logo.jpeg" alt="Sree Veerabhadra Pickles logo"><div><strong>Sree Veerabhadra</strong><span>Pickles</span></div></a>
-  <button id="menuBtn" class="menu-btn" type="button" aria-label="Open navigation" aria-expanded="false"><span></span><span></span><span></span></button>
-  <nav id="mainNav">
-    <a href="#products">Products</a><a href="#why-us">Why Us</a><a href="#about">About</a><a href="#faq">FAQ</a><a href="#contact">Contact</a>
-    <a id="loginLink" href="login.html">Login</a><a id="accountLink" href="account.html" class="hidden">My Account</a><button id="logoutBtn" class="hidden" type="button">Logout</button>
-    <button id="cartBtn" class="cart-btn" type="button">Cart <span id="cartCount">0</span></button>
-  </nav>
-</div></header>
 
-<main>
-<section id="home" class="hero"><div class="container hero-grid">
-  <div class="reveal"><span class="tag">Traditional Andhra taste</span><h1>Homemade pickles with the taste of tradition.</h1><p>Authentic flavours prepared with care in Velgode and packed safely for delivery across India.</p>
-    <div class="actions"><a href="#products" class="btn primary">Shop Pickles</a><a class="btn secondary" href="https://wa.me/919985222440" target="_blank" rel="noopener noreferrer">WhatsApp Us</a></div>
-    <div class="trust"><span>Delivery Across India</span><span>Shipping charges apply</span><span>Cash on Delivery</span><span>UPI Available</span></div>
+  <!-- Accessibility: Skip Link -->
+  <a class="skip-link" href="#mainContent">
+    Skip to main content
+  </a>
+
+  <!-- =====================================================
+       ANNOUNCEMENT BAR
+       ===================================================== -->
+  <div class="announcement-bar">
+    <div class="container announcement-inner">
+
+      <p>
+        🌶️ Traditional Andhra taste, prepared with care
+      </p>
+
+      <div class="announcement-info">
+        <span>Delivery Across India</span>
+        <span class="announcement-dot">•</span>
+        <span>Shipping charges apply</span>
+      </div>
+
+    </div>
   </div>
-  <div class="hero-logo reveal"><img src="logo.jpeg" alt="Sree Veerabhadra Pickles"></div>
-</div></section>
 
-<section class="trust-strip"><div class="container trust-strip-grid">
-  <article><b>T</b><div><strong>Traditional Recipes</strong><small>Authentic homemade flavour</small></div></article>
-  <article><b>Q</b><div><strong>Quality Ingredients</strong><small>Carefully selected ingredients</small></div></article>
-  <article><b>P</b><div><strong>Secure Packaging</strong><small>Carefully packed for shipping</small></div></article>
-  <article><b>₹</b><div><strong>Easy Payments</strong><small>Cash on Delivery and UPI</small></div></article>
-</div></section>
+  <!-- =====================================================
+       HEADER / NAVBAR
+       ===================================================== -->
+  <header class="site-header" id="siteHeader">
 
-<section id="products" class="section"><div class="container">
-  <div class="section-head reveal"><div><span class="tag">Our products</span><h2>Pickles you will love</h2><p class="section-intro">Choose your favourite flavour and add it directly to your cart.</p></div><input id="search" class="search" type="search" placeholder="Search products" aria-label="Search products"></div>
-  <div id="loading" class="notice">Loading products…</div><div id="emptyProducts" class="notice hidden">Products will be added soon.</div><div id="productGrid" class="product-grid"></div>
-</div></section>
+    <div class="container navbar">
 
-<section id="why-us" class="section why-section"><div class="container">
-  <div class="center-heading reveal"><span class="tag">Why choose us</span><h2>Traditional flavour, carefully packed</h2><p>From preparation to delivery, every step is handled with attention.</p></div>
-  <div class="why-grid">
-    <article class="why-card reveal"><span>01</span><h3>Traditional Taste</h3><p>Familiar Andhra flavours inspired by home kitchens.</p></article>
-    <article class="why-card reveal"><span>02</span><h3>Fresh Batches</h3><p>Prepared in manageable batches for better attention to quality.</p></article>
-    <article class="why-card reveal"><span>03</span><h3>Careful Packing</h3><p>Containers are packed carefully to support safe delivery.</p></article>
-    <article class="why-card reveal"><span>04</span><h3>India-wide Delivery</h3><p>Orders can be shipped across India. Shipping charges apply.</p></article>
-  </div>
-</div></section>
+      <!-- Brand -->
+      <a class="brand" href="#home" aria-label="Sree Veerabhadra Pickles home">
 
-<section id="about" class="section soft"><div class="container two-col">
-  <div class="reveal"><span class="tag">About us</span><h2>Made with care in Velgode</h2><p>Sree Veerabhadra Pickles brings traditional flavours from our kitchen to families across India.</p></div>
-  <div class="features"><article class="reveal"><b>Authentic taste</b><p>Traditional recipes and carefully selected ingredients.</p></article><article class="reveal"><b>Fresh batches</b><p>Prepared in smaller quantities for better quality.</p></article><article class="reveal"><b>Safe packing</b><p>Carefully packed for delivery across India.</p></article></div>
-</div></section>
+        <div class="brand-mark" aria-hidden="true">
+          SV
+        </div>
 
-<section id="faq" class="section"><div class="container faq-layout">
-  <div class="reveal"><span class="tag">Frequently asked</span><h2>Questions about ordering</h2><p>Quick answers about delivery, payment and tracking.</p></div>
-  <div class="faq-list">
-    <article class="faq-item reveal"><button type="button" aria-expanded="false">Do you deliver across India?<span>+</span></button><div class="faq-answer"><p>Yes. Delivery is available across India. Shipping charges apply according to destination and parcel details.</p></div></article>
-    <article class="faq-item reveal"><button type="button" aria-expanded="false">Which payment methods are available?<span>+</span></button><div class="faq-answer"><p>Cash on Delivery and UPI are available through checkout.</p></div></article>
-    <article class="faq-item reveal"><button type="button" aria-expanded="false">How can I track my order?<span>+</span></button><div class="faq-answer"><p>Courier and tracking details appear in your account after they are added by the store.</p></div></article>
-    <article class="faq-item reveal"><button type="button" aria-expanded="false">Can I order through WhatsApp?<span>+</span></button><div class="faq-answer"><p>Yes. Contact us on WhatsApp at 99852 22440 for help.</p></div></article>
-  </div>
-</div></section>
+        <div class="brand-text">
+          <strong>Sree Veerabhadra</strong>
+          <span>Pickles</span>
+        </div>
 
-<section id="contact" class="section"><div class="container contact"><div class="reveal"><span class="tag light">Contact</span><h2>Need help with your order?</h2><p>Opposite Bus Stand, near Rajappa Hospital, Velgode – 518533, Nandyal District, Andhra Pradesh.</p></div><div class="actions reveal"><a class="btn white" href="tel:+919985222440">Call 99852 22440</a><a class="btn outline" href="https://wa.me/919985222440" target="_blank" rel="noopener noreferrer">WhatsApp</a></div></div></section>
-</main>
+      </a>
 
-<aside id="cartDrawer" class="drawer"><div class="drawer-head"><h3>Your Cart</h3><button id="closeCart" type="button">×</button></div><div id="cartItems" class="cart-items"></div><div class="drawer-foot"><div class="shipping-note">Delivery Across India • Shipping charges apply</div><div class="total"><span>Total</span><strong id="cartTotal">₹0</strong></div><button id="checkoutBtn" class="btn primary full" type="button">Checkout</button></div></aside>
-<div id="overlay" class="overlay"></div>
-<div id="checkoutModal" class="modal"><div class="modal-card"><div class="drawer-head"><h3>Checkout</h3><button id="closeCheckout" type="button">×</button></div>
-<form id="checkoutForm" class="form">
-<label>Full name<input name="name" required></label><label>Phone number<input name="phone" inputmode="numeric" required pattern="[0-9]{10}" maxlength="10"></label><label class="wide">Full address<textarea name="address" required></textarea></label><label>City<input name="city" required></label><label>PIN code<input name="pincode" inputmode="numeric" required pattern="[0-9]{6}" maxlength="6"></label>
-<fieldset class="wide"><legend>Payment Method</legend><label class="radio"><input type="radio" name="payment" value="Cash on Delivery" checked>Cash on Delivery</label><label class="radio"><input type="radio" name="payment" value="UPI">UPI Payment</label>
-<div id="upiPaymentBox" class="hidden" style="margin-top:18px;"><p><strong>Payable amount:</strong> <span id="upiAmount">₹0</span></p><img src="payment-qr.jpeg.jpeg" alt="Sree Veerabhadra Pickles UPI QR" style="display:block;width:100%;max-width:280px;margin:15px auto;border-radius:12px;"><a id="upiPayBtn" class="btn primary full" href="#">Pay using UPI App</a><label style="margin-top:15px;">UPI Transaction ID / UTR Number<input id="transactionId" name="transactionId" type="text" maxlength="30" placeholder="Enter transaction ID after payment"></label><p style="font-size:13px;color:#666;">Payment will be verified before the order is confirmed.</p></div></fieldset>
-<button class="btn primary full wide" type="submit">Place Order</button></form></div></div>
+      <!-- Desktop Navigation -->
+      <nav class="desktop-nav" aria-label="Main navigation">
 
-<a class="floating-whatsapp" href="https://wa.me/919985222440" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">WA</a><button id="scrollTopBtn" class="scroll-top" type="button" aria-label="Scroll to top">↑</button><div id="toast" class="toast"></div>
-<footer><div class="container footer"><span>© <span id="year"></span> Sree Veerabhadra Pickles</span><a href="admin.html">Admin Portal</a></div></footer>
-<script type="module" src="app.js?v=6"></script><script type="module" src="auth-nav.js"></script><script src="site-ui.js?v=1"></script>
+        <a class="nav-link active" href="#home">
+          Home
+        </a>
+
+        <a class="nav-link" href="#products">
+          Products
+        </a>
+
+        <a class="nav-link" href="#whyUs">
+          Why Us
+        </a>
+
+        <a class="nav-link" href="#about">
+          About
+        </a>
+
+        <a class="nav-link" href="#faq">
+          FAQ
+        </a>
+
+        <a class="nav-link" href="#contact">
+          Contact
+        </a>
+
+      </nav>
+
+      <!-- Navbar Actions -->
+      <div class="nav-actions">
+
+        <!-- Login link required by app.js -->
+        <a
+          href="login.html"
+          class="nav-account-link"
+          id="loginLink"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-5 0-9 2.5-9 6v2h18v-2c0-3.5-4-6-9-6Z"/>
+          </svg>
+
+          <span>Login</span>
+        </a>
+
+        <!-- Account link required by app.js -->
+        <a
+          href="account.html"
+          class="nav-account-link hidden"
+          id="accountLink"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-5 0-9 2.5-9 6v2h18v-2c0-3.5-4-6-9-6Z"/>
+          </svg>
+
+          <span>Account</span>
+        </a>
+
+        <!-- Logout button required by app.js -->
+        <button
+          type="button"
+          class="nav-logout-btn hidden"
+          id="logoutBtn"
+        >
+          Logout
+        </button>
+
+        <!-- Cart button required by app.js -->
+        <button
+          type="button"
+          class="cart-button"
+          id="cartBtn"
+          aria-label="Open shopping cart"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path d="M7 4H3V2H8.5l1 2H21a1 1 0 0 1 .96 1.27l-2 7A1 1 0 0 1 19 13H10l-.5 2H20v2H8a1 1 0 0 1-.97-1.24L8 12 5.5 6H3V4h4Zm3.2 7h8.05l1.43-5h-11.6l2.12 5ZM9 22a2 2 0 1 1 0-4 2 2 0 0 1 0 4Zm10 0a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z"/>
+          </svg>
+
+          <span class="cart-button-text">Cart</span>
+
+          <!-- Cart count required by app.js -->
+          <span class="cart-count" id="cartCount">
+            0
+          </span>
+        </button>
+
+        <!-- Mobile Menu Button -->
+        <button
+          type="button"
+          class="mobile-menu-button"
+          id="mobileMenuButton"
+          aria-label="Open mobile menu"
+          aria-expanded="false"
+          aria-controls="mobileMenu"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- Mobile Navigation -->
+    <nav
+      class="mobile-menu"
+      id="mobileMenu"
+      aria-label="Mobile navigation"
+    >
+      <a href="#home">Home</a>
+      <a href="#products">Products</a>
+      <a href="#whyUs">Why Us</a>
+      <a href="#about">About</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">Contact</a>
+    </nav>
+
+  </header>
+
+  <!-- =====================================================
+       MAIN CONTENT
+       ===================================================== -->
+  <main id="mainContent">
+
+    <!-- ===================================================
+         HERO SECTION
+         =================================================== -->
+    <section class="hero-section" id="home">
+
+      <div class="hero-decoration hero-decoration-one"></div>
+      <div class="hero-decoration hero-decoration-two"></div>
+
+      <div class="container hero-grid">
+
+        <!-- Hero Content -->
+        <div class="hero-content">
+
+          <div class="hero-badge">
+            <span class="hero-badge-icon">✦</span>
+            Authentic Andhra Flavours
+          </div>
+
+          <h1>
+            Taste the tradition in
+            <span>every spoonful.</span>
+          </h1>
+
+          <p class="hero-description">
+            Carefully prepared pickles inspired by traditional
+            Andhra recipes, made to bring bold, homestyle flavour
+            to every meal.
+          </p>
+
+          <div class="hero-actions">
+
+            <a class="primary-button" href="#products">
+              Shop Our Pickles
+
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path d="m13 5 7 7-7 7-1.4-1.4 4.6-4.6H4v-2h12.2l-4.6-4.6L13 5Z"/>
+              </svg>
+            </a>
+
+            <a class="secondary-button" href="#about">
+              Our Story
+            </a>
+
+          </div>
+
+          <div class="hero-features">
+
+            <div class="hero-feature">
+              <div class="feature-check">✓</div>
+
+              <div>
+                <strong>Traditional Recipes</strong>
+                <span>Authentic homemade taste</span>
+              </div>
+            </div>
+
+            <div class="hero-feature">
+              <div class="feature-check">✓</div>
+
+              <div>
+                <strong>Secure Packing</strong>
+                <span>Packed carefully for delivery</span>
+              </div>
+            </div>
+
+            <div class="hero-feature">
+              <div class="feature-check">✓</div>
+
+              <div>
+                <strong>Across India</strong>
+                <span>Shipping charges apply</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Hero Visual -->
+        <div class="hero-visual">
+
+          <div class="hero-image-glow"></div>
+
+          <div class="hero-main-card">
+
+            <div class="hero-card-label">
+              <span>Homestyle</span>
+              <strong>Andhra Pickles</strong>
+            </div>
+
+            <div class="hero-jar-scene">
+
+              <div class="hero-leaf hero-leaf-left">
+                🌿
+              </div>
+
+              <div class="hero-jar">
+
+                <div class="jar-lid"></div>
+
+                <div class="jar-neck"></div>
+
+                <div class="jar-body">
+
+                  <div class="jar-highlight"></div>
+
+                  <div class="jar-label">
+                    <span class="jar-logo">SV</span>
+
+                    <strong>Sree Veerabhadra</strong>
+
+                    <small>Traditional Pickles</small>
+                  </div>
+
+                </div>
+
+              </div>
+
+              <div class="hero-bowl">
+                <div class="hero-bowl-pickle">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+
+              <div class="hero-leaf hero-leaf-right">
+                🌿
+              </div>
+
+            </div>
+
+            <div class="hero-spice-row">
+              <span>🌶️</span>
+              <span>🥭</span>
+              <span>🧄</span>
+              <span>🌿</span>
+            </div>
+
+          </div>
+
+          <div class="floating-card floating-card-top">
+            <div class="floating-card-icon">🌶️</div>
+
+            <div>
+              <strong>Bold Taste</strong>
+              <span>Authentic flavour</span>
+            </div>
+          </div>
+
+          <div class="floating-card floating-card-bottom">
+            <div class="floating-card-icon">📦</div>
+
+            <div>
+              <strong>Careful Packing</strong>
+              <span>Ready for delivery</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Hero Bottom Curve -->
+      <div class="hero-bottom-shape" aria-hidden="true"></div>
+
+    </section>
+
+    <!-- ===================================================
+         TRUST STRIP
+         =================================================== -->
+    <section class="trust-strip" aria-label="Shopping benefits">
+
+      <div class="container trust-grid">
+
+        <article class="trust-item">
+          <div class="trust-icon">🚚</div>
+
+          <div>
+            <strong>Delivery Across India</strong>
+            <span>Shipping charges apply</span>
+          </div>
+        </article>
+
+        <article class="trust-item">
+          <div class="trust-icon">💵</div>
+
+          <div>
+            <strong>Cash on Delivery</strong>
+            <span>Available for eligible orders</span>
+          </div>
+        </article>
+
+        <article class="trust-item">
+          <div class="trust-icon">📱</div>
+
+          <div>
+            <strong>UPI Payment</strong>
+            <span>Simple and convenient payment</span>
+          </div>
+        </article>
+
+        <article class="trust-item">
+          <div class="trust-icon">🛡️</div>
+
+          <div>
+            <strong>Secure Ordering</strong>
+            <span>Your order details stay protected</span>
+          </div>
+        </article>
+
+      </div>
+
+    </section>
+
+    <!-- ===================================================
+         PRODUCTS SECTION
+         =================================================== -->
+    <section class="products-section section-spacing" id="products">
+
+      <div class="container">
+
+        <div class="section-heading section-heading-centered">
+
+          <div class="section-eyebrow">
+            Our Collection
+          </div>
+
+          <h2>
+            Pickles made to complete
+            <span>every meal</span>
+          </h2>
+
+          <p>
+            Explore our range of carefully prepared pickles with
+            authentic Andhra-style flavours.
+          </p>
+
+        </div>
+
+        <!-- Product Search -->
+        <div class="products-toolbar">
+
+          <div class="search-box">
+
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path d="m21 19.6-5.1-5.1a8 8 0 1 0-1.4 1.4l5.1 5.1 1.4-1.4ZM4 10a6 6 0 1 1 12 0 6 6 0 0 1-12 0Z"/>
+            </svg>
+
+            <!-- Search input required by app.js -->
+            <input
+              type="search"
+              id="search"
+              placeholder="Search mango, tomato, gongura..."
+              autocomplete="off"
+              aria-label="Search products"
+            >
+
+          </div>
+
+          <div class="products-count-note">
+            Fresh flavours added regularly
+          </div>
+
+        </div>
+
+        <!-- Loading state required by app.js -->
+        <div class="loading-state" id="loading">
+
+          <div class="loading-spinner"></div>
+
+          <p>Loading delicious pickles...</p>
+
+        </div>
+
+        <!-- Empty products state required by app.js -->
+        <div class="empty-products hidden" id="emptyProducts">
+
+          <div class="empty-products-icon">
+            🫙
+          </div>
+
+          <h3>No products found</h3>
+
+          <p>
+            Try searching with another product name.
+          </p>
+
+        </div>
+
+        <!-- Product grid required by app.js -->
+        <div class="product-grid" id="productGrid"></div>
+
+      </div>
+
+    </section>
+
+    <!-- ===================================================
+         CATEGORY BANNER
+         =================================================== -->
+    <section class="category-banner-section">
+
+      <div class="container">
+
+        <div class="category-banner">
+
+          <div class="category-banner-content">
+
+            <div class="section-eyebrow section-eyebrow-light">
+              A Taste of Andhra
+            </div>
+
+            <h2>
+              A little spice can make an ordinary meal memorable.
+            </h2>
+
+            <p>
+              Enjoy our pickles with rice, curd rice, dosa,
+              chapati, paratha and your favourite home-cooked meals.
+            </p>
+
+            <a class="light-button" href="#products">
+              Explore Products
+            </a>
+
+          </div>
+
+          <div class="category-banner-art" aria-hidden="true">
+
+            <div class="decorative-plate">
+
+              <div class="decorative-pickle-piece piece-one"></div>
+              <div class="decorative-pickle-piece piece-two"></div>
+              <div class="decorative-pickle-piece piece-three"></div>
+              <div class="decorative-pickle-piece piece-four"></div>
+              <div class="decorative-pickle-piece piece-five"></div>
+
+            </div>
+
+            <span class="banner-chilli banner-chilli-one">
+              🌶️
+            </span>
+
+            <span class="banner-chilli banner-chilli-two">
+              🌶️
+            </span>
+
+            <span class="banner-leaf">
+              🌿
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ===================================================
+         WHY CHOOSE US
+         =================================================== -->
+    <section class="why-section section-spacing" id="whyUs">
+
+      <div class="container">
+
+        <div class="section-heading section-heading-centered">
+
+          <div class="section-eyebrow">
+            Why Choose Us
+          </div>
+
+          <h2>
+            Traditional flavour,
+            <span>modern convenience</span>
+          </h2>
+
+          <p>
+            From preparation to packing, every step is handled
+            with attention and care.
+          </p>
+
+        </div>
+
+        <div class="why-grid">
+
+          <article class="why-card">
+
+            <div class="why-icon">
+              🫙
+            </div>
+
+            <h3>Homestyle Taste</h3>
+
+            <p>
+              Recipes inspired by the familiar, comforting taste
+              of traditional Andhra kitchens.
+            </p>
+
+          </article>
+
+          <article class="why-card">
+
+            <div class="why-icon">
+              🌶️
+            </div>
+
+            <h3>Rich Flavours</h3>
+
+            <p>
+              Balanced spice, tanginess and aroma that pair
+              beautifully with everyday meals.
+            </p>
+
+          </article>
+
+          <article class="why-card">
+
+            <div class="why-icon">
+              📦
+            </div>
+
+            <h3>Careful Packaging</h3>
+
+            <p>
+              Products are packed securely to help reduce leakage
+              and keep your order protected.
+            </p>
+
+          </article>
+
+          <article class="why-card">
+
+            <div class="why-icon">
+              🤝
+            </div>
+
+            <h3>Customer Support</h3>
+
+            <p>
+              Have a question about your order? Contact us directly
+              through phone or WhatsApp.
+            </p>
+
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ===================================================
+         ABOUT SECTION
+         =================================================== -->
+    <section class="about-section section-spacing" id="about">
+
+      <div class="container about-grid">
+
+        <div class="about-visual">
+
+          <div class="about-main-image">
+
+            <div class="about-image-pattern"></div>
+
+            <div class="about-pickle-display">
+
+              <div class="about-jar about-jar-left">
+                <div class="small-jar-lid"></div>
+
+                <div class="small-jar-body">
+                  <div class="small-jar-label">
+                    Mango
+                  </div>
+                </div>
+              </div>
+
+              <div class="about-jar about-jar-main">
+                <div class="large-jar-lid"></div>
+
+                <div class="large-jar-body">
+                  <div class="large-jar-label">
+                    <span>SV</span>
+                    <strong>Sree Veerabhadra</strong>
+                    <small>Pickles</small>
+                  </div>
+                </div>
+              </div>
+
+              <div class="about-jar about-jar-right">
+                <div class="small-jar-lid"></div>
+
+                <div class="small-jar-body tomato-fill">
+                  <div class="small-jar-label">
+                    Tomato
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="about-experience-card">
+            <strong>Authentic</strong>
+            <span>Andhra-style taste</span>
+          </div>
+
+        </div>
+
+        <div class="about-content">
+
+          <div class="section-eyebrow">
+            Our Story
+          </div>
+
+          <h2>
+            Made with tradition.
+            <span>Shared with love.</span>
+          </h2>
+
+          <p>
+            Sree Veerabhadra Pickles brings the bold and comforting
+            flavours of Andhra-style pickles to customers who love
+            traditional food.
+          </p>
+
+          <p>
+            Our goal is simple: prepare satisfying pickles, pack
+            them carefully and make ordering convenient for
+            customers across India.
+          </p>
+
+          <div class="about-points">
+
+            <div class="about-point">
+              <span class="about-point-icon">✓</span>
+              <div>
+                <strong>Traditional inspiration</strong>
+                <p>Flavours rooted in Andhra food culture.</p>
+              </div>
+            </div>
+
+            <div class="about-point">
+              <span class="about-point-icon">✓</span>
+              <div>
+                <strong>Convenient ordering</strong>
+                <p>Shop online using COD or UPI payment.</p>
+              </div>
+            </div>
+
+            <div class="about-point">
+              <span class="about-point-icon">✓</span>
+              <div>
+                <strong>Personal support</strong>
+                <p>Contact us directly for order assistance.</p>
+              </div>
+            </div>
+
+          </div>
+
+          <a class="primary-button" href="#products">
+            View Our Products
+          </a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ===================================================
+         HOW TO ORDER
+         =================================================== -->
+    <section class="order-process-section section-spacing">
+
+      <div class="container">
+
+        <div class="section-heading section-heading-centered">
+
+          <div class="section-eyebrow">
+            Simple Ordering
+          </div>
+
+          <h2>
+            Order your favourite pickle
+            <span>in four easy steps</span>
+          </h2>
+
+        </div>
+
+        <div class="process-grid">
+
+          <article class="process-card">
+
+            <span class="process-number">01</span>
+
+            <div class="process-icon">
+              🔎
+            </div>
+
+            <h3>Choose a Product</h3>
+
+            <p>
+              Browse the collection and select your favourite pickle.
+            </p>
+
+          </article>
+
+          <article class="process-card">
+
+            <span class="process-number">02</span>
+
+            <div class="process-icon">
+              🛒
+            </div>
+
+            <h3>Add to Cart</h3>
+
+            <p>
+              Choose the quantity and add the product to your cart.
+            </p>
+
+          </article>
+
+          <article class="process-card">
+
+            <span class="process-number">03</span>
+
+            <div class="process-icon">
+              📝
+            </div>
+
+            <h3>Enter Your Details</h3>
+
+            <p>
+              Provide your delivery address and contact information.
+            </p>
+
+          </article>
+
+          <article class="process-card">
+
+            <span class="process-number">04</span>
+
+            <div class="process-icon">
+              📦
+            </div>
+
+            <h3>Order Confirmed</h3>
+
+            <p>
+              Select COD or UPI and place your order securely.
+            </p>
+
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ===================================================
+         FAQ SECTION
+         =================================================== -->
+    <section class="faq-section section-spacing" id="faq">
+
+      <div class="container faq-layout">
+
+        <div class="faq-intro">
+
+          <div class="section-eyebrow">
+            Frequently Asked Questions
+          </div>
+
+          <h2>
+            Everything you need to know before ordering.
+          </h2>
+
+          <p>
+            Find quick answers about delivery, payment and order support.
+          </p>
+
+          <a
+            class="secondary-button"
+            href="https://wa.me/919985222440?text=Hello%20Sree%20Veerabhadra%20Pickles%2C%20I%20need%20help%20with%20an%20order."
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Ask on WhatsApp
+          </a>
+
+        </div>
+
+        <div class="faq-list">
+
+          <article class="faq-item">
+
+            <button
+              type="button"
+              class="faq-question"
+              aria-expanded="false"
+            >
+              <span>Do you deliver across India?</span>
+              <span class="faq-plus">+</span>
+            </button>
+
+            <div class="faq-answer">
+              <p>
+                Yes, delivery is available across India. Shipping
+                charges apply based on the destination and order.
+              </p>
+            </div>
+
+          </article>
+
+          <article class="faq-item">
+
+            <button
+              type="button"
+              class="faq-question"
+              aria-expanded="false"
+            >
+              <span>Which payment methods are available?</span>
+              <span class="faq-plus">+</span>
+            </button>
+
+            <div class="faq-answer">
+              <p>
+                Customers can place orders using Cash on Delivery
+                or UPI payment, depending on availability.
+              </p>
+            </div>
+
+          </article>
+
+          <article class="faq-item">
+
+            <button
+              type="button"
+              class="faq-question"
+              aria-expanded="false"
+            >
+              <span>How can I track my order?</span>
+              <span class="faq-plus">+</span>
+            </button>
+
+            <div class="faq-answer">
+              <p>
+                Once courier details are added, tracking information
+                will be available through your account or order details.
+              </p>
+            </div>
+
+          </article>
+
+          <article class="faq-item">
+
+            <button
+              type="button"
+              class="faq-question"
+              aria-expanded="false"
+            >
+              <span>How should I store the pickle?</span>
+              <span class="faq-plus">+</span>
+            </button>
+
+            <div class="faq-answer">
+              <p>
+                Keep the container tightly closed, use a clean and
+                dry spoon, and follow the storage instructions shown
+                on the product packaging.
+              </p>
+            </div>
+
+          </article>
+
+          <article class="faq-item">
+
+            <button
+              type="button"
+              class="faq-question"
+              aria-expanded="false"
+            >
+              <span>How can I contact you about my order?</span>
+              <span class="faq-plus">+</span>
+            </button>
+
+            <div class="faq-answer">
+              <p>
+                You can call or WhatsApp us at 9985222440 for
+                assistance with your order.
+              </p>
+            </div>
+
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ===================================================
+         CONTACT SECTION
+         =================================================== -->
+    <section class="contact-section section-spacing" id="contact">
+
+      <div class="container">
+
+        <div class="contact-card">
+
+          <div class="contact-content">
+
+            <div class="section-eyebrow section-eyebrow-light">
+              Contact Us
+            </div>
+
+            <h2>
+              Need help choosing or placing an order?
+            </h2>
+
+            <p>
+              Speak with us directly for product information,
+              delivery questions or order assistance.
+            </p>
+
+            <div class="contact-actions">
+
+              <a
+                class="light-button"
+                href="https://wa.me/919985222440?text=Hello%20Sree%20Veerabhadra%20Pickles"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                WhatsApp Us
+              </a>
+
+              <a class="outline-light-button" href="tel:+919985222440">
+                Call 9985222440
+              </a>
+
+            </div>
+
+          </div>
+
+          <div class="contact-details">
+
+            <article class="contact-detail">
+
+              <div class="contact-detail-icon">
+                📍
+              </div>
+
+              <div>
+                <span>Our Address</span>
+
+                <strong>
+                  Opposite Bus Stand, Near Rajappa Hospital,
+                  Velgode 518533, Nandyal District,
+                  Andhra Pradesh
+                </strong>
+              </div>
+
+            </article>
+
+            <article class="contact-detail">
+
+              <div class="contact-detail-icon">
+                📞
+              </div>
+
+              <div>
+                <span>Phone & WhatsApp</span>
+
+                <a href="tel:+919985222440">
+                  +91 99852 22440
+                </a>
+              </div>
+
+            </article>
+
+            <article class="contact-detail">
+
+              <div class="contact-detail-icon">
+                🚚
+              </div>
+
+              <div>
+                <span>Delivery</span>
+
+                <strong>
+                  Delivery Across India
+                </strong>
+
+                <small>
+                  Shipping charges apply
+                </small>
+              </div>
+
+            </article>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- =====================================================
+       FOOTER
+       ===================================================== -->
+  <footer class="site-footer">
+
+    <div class="container footer-grid">
+
+      <div class="footer-brand-column">
+
+        <a class="brand footer-brand" href="#home">
+
+          <div class="brand-mark">
+            SV
+          </div>
+
+          <div class="brand-text">
+            <strong>Sree Veerabhadra</strong>
+            <span>Pickles</span>
+          </div>
+
+        </a>
+
+        <p>
+          Traditional Andhra-style flavours made for customers
+          who enjoy bold and comforting food.
+        </p>
+
+        <div class="footer-payment-badges">
+          <span>Cash on Delivery</span>
+          <span>UPI Available</span>
+        </div>
+
+      </div>
+
+      <div class="footer-column">
+
+        <h3>Quick Links</h3>
+
+        <a href="#home">Home</a>
+        <a href="#products">Products</a>
+        <a href="#about">About Us</a>
+        <a href="#faq">FAQs</a>
+
+      </div>
+
+      <div class="footer-column">
+
+        <h3>Customer</h3>
+
+        <a href="login.html">Login</a>
+        <a href="account.html">My Account</a>
+        <a href="#products">Shop Pickles</a>
+        <a href="#contact">Order Support</a>
+
+      </div>
+
+      <div class="footer-column footer-contact-column">
+
+        <h3>Contact</h3>
+
+        <a href="tel:+919985222440">
+          +91 99852 22440
+        </a>
+
+        <p>
+          Opposite Bus Stand,<br>
+          Near Rajappa Hospital,<br>
+          Velgode 518533,<br>
+          Nandyal District,<br>
+          Andhra Pradesh
+        </p>
+
+      </div>
+
+    </div>
+
+    <div class="container footer-bottom">
+
+      <p>
+        © <span id="currentYear"></span>
+        Sree Veerabhadra Pickles. All rights reserved.
+      </p>
+
+      <p>
+        Delivery Across India · Shipping charges apply
+      </p>
+
+    </div>
+
+  </footer>
+
+  <!-- =====================================================
+       CART OVERLAY
+       Required by app.js
+       ===================================================== -->
+  <div class="page-overlay" id="overlay"></div>
+
+  <!-- =====================================================
+       CART DRAWER
+       Required IDs must not change
+       ===================================================== -->
+  <aside
+    class="cart-drawer"
+    id="cartDrawer"
+    aria-label="Shopping cart"
+  >
+
+    <div class="cart-header">
+
+      <div>
+        <span class="cart-eyebrow">
+          Your Selection
+        </span>
+
+        <h2>Shopping Cart</h2>
+      </div>
+
+      <button
+        type="button"
+        class="icon-close-button"
+        id="closeCart"
+        aria-label="Close cart"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <!-- Cart items required by app.js -->
+    <div class="cart-items" id="cartItems"></div>
+
+    <div class="cart-footer">
+
+      <div class="cart-total-row">
+
+        <span>Order Total</span>
+
+        <!-- Cart total required by app.js -->
+        <strong id="cartTotal">
+          ₹0
+        </strong>
+
+      </div>
+
+      <p class="shipping-note">
+        Shipping charges are calculated separately.
+      </p>
+
+      <!-- Checkout button required by app.js -->
+      <button
+        type="button"
+        class="checkout-button"
+        id="checkoutBtn"
+      >
+        Proceed to Checkout
+
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+          <path d="m13 5 7 7-7 7-1.4-1.4 4.6-4.6H4v-2h12.2l-4.6-4.6L13 5Z"/>
+        </svg>
+      </button>
+
+      <div class="cart-payment-note">
+        <span>💵 Cash on Delivery</span>
+        <span>📱 UPI Available</span>
+      </div>
+
+    </div>
+
+  </aside>
+
+  <!-- =====================================================
+       CHECKOUT MODAL
+       Required IDs must not change
+       ===================================================== -->
+  <section
+    class="checkout-modal"
+    id="checkoutModal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="checkoutTitle"
+  >
+
+    <div class="checkout-modal-header">
+
+      <div>
+        <span class="checkout-eyebrow">
+          Secure Checkout
+        </span>
+
+        <h2 id="checkoutTitle">
+          Complete Your Order
+        </h2>
+      </div>
+
+      <button
+        type="button"
+        class="icon-close-button"
+        id="closeCheckout"
+        aria-label="Close checkout"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <!-- Checkout form required by app.js -->
+    <form class="checkout-form" id="checkoutForm">
+
+      <div class="checkout-section">
+
+        <div class="checkout-section-heading">
+
+          <span class="checkout-step">
+            1
+          </span>
+
+          <div>
+            <h3>Customer Details</h3>
+            <p>Enter the information needed for your order.</p>
+          </div>
+
+        </div>
+
+        <div class="form-grid">
+
+          <div class="form-group form-group-full">
+            <label for="customerName">
+              Full Name
+            </label>
+
+            <input
+              type="text"
+              id="customerName"
+              name="customerName"
+              placeholder="Enter your full name"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="customerPhone">
+              Mobile Number
+            </label>
+
+            <input
+              type="tel"
+              id="customerPhone"
+              name="customerPhone"
+              placeholder="10-digit mobile number"
+              maxlength="10"
+              inputmode="numeric"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="customerEmail">
+              Email Address
+            </label>
+
+            <input
+              type="email"
+              id="customerEmail"
+              name="customerEmail"
+              placeholder="Enter your email"
+            >
+          </div>
+
+          <div class="form-group form-group-full">
+            <label for="customerAddress">
+              Full Delivery Address
+            </label>
+
+            <textarea
+              id="customerAddress"
+              name="customerAddress"
+              rows="4"
+              placeholder="House number, street, area and landmark"
+              required
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="customerCity">
+              City / Town
+            </label>
+
+            <input
+              type="text"
+              id="customerCity"
+              name="customerCity"
+              placeholder="Enter city or town"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="customerState">
+              State
+            </label>
+
+            <input
+              type="text"
+              id="customerState"
+              name="customerState"
+              placeholder="Enter state"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="customerPincode">
+              PIN Code
+            </label>
+
+            <input
+              type="text"
+              id="customerPincode"
+              name="customerPincode"
+              placeholder="6-digit PIN code"
+              maxlength="6"
+              inputmode="numeric"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="orderNotes">
+              Order Notes
+            </label>
+
+            <input
+              type="text"
+              id="orderNotes"
+              name="orderNotes"
+              placeholder="Optional instructions"
+            >
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="checkout-section">
+
+        <div class="checkout-section-heading">
+
+          <span class="checkout-step">
+            2
+          </span>
+
+          <div>
+            <h3>Payment Method</h3>
+            <p>Select Cash on Delivery or UPI payment.</p>
+          </div>
+
+        </div>
+
+        <div class="payment-options">
+
+          <label class="payment-option">
+
+            <input
+              type="radio"
+              name="paymentMethod"
+              value="COD"
+              checked
+            >
+
+            <span class="payment-option-content">
+
+              <span class="payment-option-icon">
+                💵
+              </span>
+
+              <span>
+                <strong>Cash on Delivery</strong>
+                <small>Pay when your order is delivered.</small>
+              </span>
+
+            </span>
+
+          </label>
+
+          <label class="payment-option">
+
+            <input
+              type="radio"
+              name="paymentMethod"
+              value="UPI"
+            >
+
+            <span class="payment-option-content">
+
+              <span class="payment-option-icon">
+                📱
+              </span>
+
+              <span>
+                <strong>UPI Payment</strong>
+                <small>Scan the QR and enter your transaction ID.</small>
+              </span>
+
+            </span>
+
+          </label>
+
+        </div>
+
+        <!-- UPI box required by app.js -->
+        <div class="upi-payment-box hidden" id="upiPaymentBox">
+
+          <div class="upi-payment-heading">
+
+            <div>
+              <span class="upi-label">
+                Amount to Pay
+              </span>
+
+              <!-- UPI amount required by app.js -->
+              <strong id="upiAmount">
+                ₹0
+              </strong>
+            </div>
+
+            <span class="upi-secure">
+              Secure UPI
+            </span>
+
+          </div>
+
+          <div class="upi-payment-content">
+
+            <div class="upi-qr-card">
+
+              <!-- Replace this image with your real UPI QR -->
+              <img
+                src="images/upi-qr.png"
+                alt="UPI payment QR code"
+                class="upi-qr-image"
+              >
+
+              <p>
+                Scan using any UPI app
+              </p>
+
+            </div>
+
+            <div class="upi-payment-instructions">
+
+              <h4>How to pay</h4>
+
+              <ol>
+                <li>Open your preferred UPI app.</li>
+                <li>Scan the QR code.</li>
+                <li>Pay the exact order amount.</li>
+                <li>Copy the transaction ID.</li>
+                <li>Enter it below and place your order.</li>
+              </ol>
+
+              <!-- UPI pay button required by app.js -->
+              <button
+                type="button"
+                class="upi-pay-button"
+                id="upiPayBtn"
+              >
+                Open UPI App
+              </button>
+
+              <div class="form-group transaction-group">
+
+                <label for="transactionId">
+                  UPI Transaction ID
+                </label>
+
+                <!-- Transaction ID required by app.js -->
+                <input
+                  type="text"
+                  id="transactionId"
+                  name="transactionId"
+                  placeholder="Enter transaction ID after payment"
+                >
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="checkout-notice">
+        <span>ℹ️</span>
+
+        <p>
+          Please verify your phone number and delivery address
+          before placing the order. Shipping charges apply.
+        </p>
+      </div>
+
+      <button
+        type="submit"
+        class="place-order-button"
+      >
+        Place Order Securely
+      </button>
+
+    </form>
+
+  </section>
+
+  <!-- =====================================================
+       FLOATING WHATSAPP BUTTON
+       ===================================================== -->
+  <a
+    class="floating-whatsapp"
+    href="https://wa.me/919985222440?text=Hello%20Sree%20Veerabhadra%20Pickles"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Chat with us on WhatsApp"
+  >
+    <span class="whatsapp-icon">
+      ☎
+    </span>
+
+    <span class="whatsapp-text">
+      WhatsApp
+    </span>
+  </a>
+
+  <!-- =====================================================
+       SCROLL TO TOP
+       ===================================================== -->
+  <button
+    type="button"
+    class="scroll-top-button"
+    id="scrollTopButton"
+    aria-label="Scroll to top"
+  >
+    ↑
+  </button>
+
+  <!-- =====================================================
+       TOAST
+       Required by app.js
+       ===================================================== -->
+  <div
+    class="toast"
+    id="toast"
+    role="status"
+    aria-live="polite"
+  ></div>
+
+  <!-- Existing Firebase/app functionality -->
+  <script type="module" src="app.js"></script>
+
+  <!-- Homepage UI only -->
+  <script src="site-ui.js"></script>
+
 </body>
 </html>
