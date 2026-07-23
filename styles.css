@@ -20,3 +20,137 @@ h1,h2{font-family:Georgia,serif;line-height:1.05;margin:.35em 0}h1{font-size:cla
 .nav-button:hover {
   background: rgba(255, 255, 255, 0.1);
 }
+/* =========================================================
+   PREMIUM PRODUCT SECTION UPGRADE
+   ========================================================= */
+
+#products {
+  background:
+    radial-gradient(circle at top right, rgba(213, 163, 60, 0.08), transparent 24%),
+    #fffdf9;
+}
+
+#products .section-head {
+  padding-bottom: 8px;
+}
+
+#products .section-head h2 {
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+}
+
+.product-grid {
+  gap: 28px;
+}
+
+.product,
+.product-card {
+  background: linear-gradient(180deg, #ffffff, #fffaf3);
+  border: 1px solid rgba(124, 33, 21, 0.1);
+}
+
+.product::after,
+.product-card::after {
+  content: "Best Seller";
+  position: absolute;
+  z-index: 4;
+  top: 14px;
+  right: 14px;
+  border-radius: 50px;
+  padding: 6px 10px;
+  color: #4f150d;
+  background: linear-gradient(135deg, #f8dc95, #d5a33c);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: 0 8px 18px rgba(213, 163, 60, 0.25);
+}
+
+.product-img {
+  height: 270px;
+  padding: 16px;
+  background:
+    radial-gradient(circle at center, #fffefb 0%, #f7e7c8 100%);
+}
+
+.product-img img {
+  border-radius: 16px;
+}
+
+.product-body {
+  padding: 22px;
+}
+
+.product h3,
+.product-card h3 {
+  font-size: 1.42rem;
+}
+
+.product-body > p {
+  min-height: 24px;
+}
+
+.product-body::before {
+  content: "★★★★★";
+  display: block;
+  margin-bottom: 8px;
+  color: #d5a33c;
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+}
+
+.prices,
+.price-line {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(124, 33, 21, 0.08);
+}
+
+.offer {
+  font-size: 1.5rem;
+}
+
+.save {
+  padding: 6px 9px;
+}
+
+.product-actions,
+.qty-row {
+  margin-top: 4px;
+}
+
+.product-actions .btn,
+.qty-row .btn {
+  flex: 1;
+}
+
+.product-actions .primary,
+.qty-row .primary {
+  min-height: 48px;
+}
+
+.product:hover,
+.product-card:hover {
+  transform: translateY(-10px);
+}
+
+.product:hover .product-img img,
+.product-card:hover > img {
+  transform: scale(1.06);
+}
+
+@media (max-width: 570px) {
+  .product-img {
+    height: 300px;
+  }
+
+  .product-body {
+    padding: 20px;
+  }
+
+  .product::after,
+  .product-card::after {
+    top: 12px;
+    right: 12px;
+  }
+}
