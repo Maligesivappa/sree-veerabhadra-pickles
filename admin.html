@@ -1,52 +1,131 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin Portal | Sree Veerabhadra Pickles</title><link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Portal | Sree Veerabhadra Pickles</title>
+<link rel="stylesheet" href="styles.css">
+
 <style>
-body{background:#f6f1e7}.admin{width:min(1180px,94%);margin:28px auto}.top{display:flex;justify-content:space-between;align-items:center;gap:20px}.panel{background:white;border:1px solid var(--border);border-radius:18px;padding:20px}.login{width:min(440px,94%);margin:80px auto}.admin-grid{display:grid;grid-template-columns:350px 1fr;gap:22px}.admin-form{display:grid;gap:12px}.admin-form input,.admin-form textarea,.admin-form select{padding:12px;border:1px solid var(--border);border-radius:10px;font:inherit}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap}.small{border:0;border-radius:8px;padding:8px 10px;cursor:pointer}.danger{background:#fee;color:#a22}.status{padding:6px 9px;border-radius:8px;border:1px solid var(--border)}.tabs{display:flex;gap:10px;margin:18px 0}.tab{border:1px solid var(--border);background:white;border-radius:10px;padding:10px 14px;cursor:pointer}.tab.active{background:var(--green);color:white}@media(max-width:860px){.admin-grid{grid-template-columns:1fr}}
+body{background:#f6f1e7}
+.admin{width:min(1280px,94%);margin:28px auto}
+.top{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.panel{background:white;border:1px solid var(--border);border-radius:18px;padding:20px}
+.login{width:min(440px,94%);margin:80px auto}
+.admin-grid{display:grid;grid-template-columns:350px 1fr;gap:22px}
+.admin-form{display:grid;gap:12px}
+.admin-form input,.admin-form textarea,.admin-form select{
+  padding:12px;border:1px solid var(--border);border-radius:10px;font:inherit
+}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:12px;border-bottom:1px solid var(--border);white-space:nowrap;vertical-align:top}
+.small{border:0;border-radius:8px;padding:8px 10px;cursor:pointer;text-decoration:none;display:inline-block;margin-top:6px}
+.danger{background:#fee;color:#a22}
+.status,.tracking-input{
+  padding:8px 9px;border-radius:8px;border:1px solid var(--border);font:inherit;min-width:130px
+}
+.tabs{display:flex;gap:10px;margin:18px 0;flex-wrap:wrap}
+.tab{border:1px solid var(--border);background:white;border-radius:10px;padding:10px 14px;cursor:pointer}
+.tab.active{background:var(--green);color:white}
+
+.dashboard-cards{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(150px,1fr));
+  gap:16px;
+  margin:22px 0
+}
+.dashboard-card{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px;
+  box-shadow:0 4px 14px rgba(0,0,0,.05)
+}
+.dashboard-card span{display:block;color:#666;margin-bottom:8px;font-size:14px}
+.dashboard-card strong{display:block;font-size:26px;color:var(--green)}
+
+.order-tools{
+  display:grid;
+  grid-template-columns:minmax(220px,1fr) 220px;
+  gap:12px;
+  margin:14px 0 18px
+}
+.order-tools input,.order-tools select{
+  padding:11px;border:1px solid var(--border);border-radius:10px;font:inherit
+}
+.order-count{margin:0 0 10px;color:#666}
+.address-cell{white-space:normal;min-width:220px;max-width:300px}
+
+@media(max-width:860px){
+  .admin-grid{grid-template-columns:1fr}
+  .dashboard-cards{grid-template-columns:repeat(2,1fr)}
+  .order-tools{grid-template-columns:1fr}
+}
+@media(max-width:500px){
+  .dashboard-cards{grid-template-columns:1fr}
+}
 </style>
 </head>
+
 <body>
 <section id="loginView" class="panel login">
-  <span class="tag">Admin login</span><h2>Sree Veerabhadra Pickles</h2>
+  <span class="tag">Admin login</span>
+  <h2>Sree Veerabhadra Pickles</h2>
+
   <form id="loginForm" class="admin-form">
     <input name="email" type="email" placeholder="Admin email" required>
     <input name="password" type="password" placeholder="Password" required>
     <button class="btn primary" type="submit">Login</button>
   </form>
+
   <p id="loginMessage"></p>
 </section>
 
 <section id="adminView" class="admin hidden">
-  <div class="top"><div><span class="tag">Admin portal</span><h2>Manage Store</h2></div>
-  <div class="actions"><a href="index.html" class="btn secondary">View Website</a><button id="logoutBtn" class="btn primary">Logout</button></div></div>
+  <div class="top">
+    <div>
+      <span class="tag">Admin portal</span>
+      <h2>Manage Store</h2>
+    </div>
+
+    <div class="actions">
+      <a href="index.html" class="btn secondary">View Website</a>
+      <button id="logoutBtn" class="btn primary">Logout</button>
+    </div>
+  </div>
 
   <div class="dashboard-cards">
-  <div class="dashboard-card">
-    <span>Total Orders</span>
-    <strong id="totalOrders">0</strong>
+    <div class="dashboard-card">
+      <span>Total Orders</span>
+      <strong id="totalOrders">0</strong>
+    </div>
+
+    <div class="dashboard-card">
+      <span>Total Sales</span>
+      <strong id="totalSales">₹0</strong>
+    </div>
+
+    <div class="dashboard-card">
+      <span>Pending Shipments</span>
+      <strong id="pendingShipments">0</strong>
+    </div>
+
+    <div class="dashboard-card">
+      <span>Delivered Orders</span>
+      <strong id="deliveredOrders">0</strong>
+    </div>
   </div>
 
-  <div class="dashboard-card">
-    <span>Total Sales</span>
-    <strong id="totalSales">₹0</strong>
+  <div class="tabs">
+    <button class="tab active" data-tab="products">Products</button>
+    <button class="tab" data-tab="orders">Orders</button>
   </div>
-
-  <div class="dashboard-card">
-    <span>Pending Shipments</span>
-    <strong id="pendingShipments">0</strong>
-  </div>
-
-  <div class="dashboard-card">
-    <span>Delivered Orders</span>
-    <strong id="deliveredOrders">0</strong>
-  </div>
-</div>
 
   <div id="productsTab" class="admin-grid">
     <div class="panel">
       <h3 id="formTitle">Add Product</h3>
+
       <form id="productForm" class="admin-form">
         <input type="hidden" name="id">
         <input name="name" placeholder="Product name" required>
@@ -55,40 +134,77 @@ body{background:#f6f1e7}.admin{width:min(1180px,94%);margin:28px auto}.top{displ
         <input name="offerPrice" type="number" min="0" placeholder="Offer price" required>
         <input name="imageUrl" placeholder="Image URL (add later)">
         <textarea name="description" placeholder="Description"></textarea>
-        <select name="inStock"><option value="true">In stock</option><option value="false">Out of stock</option></select>
+
+        <select name="inStock">
+          <option value="true">In stock</option>
+          <option value="false">Out of stock</option>
+        </select>
+
         <button class="btn primary" type="submit">Save Product</button>
         <button id="cancelEdit" class="btn secondary hidden" type="button">Cancel Edit</button>
       </form>
     </div>
-    <div class="panel"><h3>Products</h3><div class="table-wrap"><table><thead><tr><th>Name</th><th>Weight</th><th>MRP</th><th>Offer</th><th>Stock</th><th>Actions</th></tr></thead><tbody id="productRows"></tbody></table></div></div>
+
+    <div class="panel">
+      <h3>Products</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Weight</th>
+              <th>MRP</th>
+              <th>Offer</th>
+              <th>Stock</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="productRows"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <div id="ordersTab" class="panel hidden">
-  <h3>Orders</h3>
+    <h3>Orders</h3>
 
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Order ID</th>
-          <th>Customer</th>
-          <th>Phone</th>
-          <th>Address</th>
-          <th>Total</th>
-          <th>Payment</th>
-          <th>Status</th>
-          <th>Courier</th>
-          <th>AWB Number</th>
-          <th>Tracking</th>
-        </tr>
-      </thead>
+    <div class="order-tools">
+      <input id="orderSearch" type="search" placeholder="Search Order ID, customer or phone">
+      <select id="statusFilter">
+        <option value="All">All statuses</option>
+        <option value="New">New</option>
+        <option value="Confirmed">Confirmed</option>
+        <option value="Packed">Packed</option>
+        <option value="Shipped">Shipped</option>
+        <option value="Delivered">Delivered</option>
+        <option value="Cancelled">Cancelled</option>
+      </select>
+    </div>
 
-      <tbody id="orderRows"></tbody>
+    <p id="orderCount" class="order-count">0 orders</p>
 
-    </table>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>Total</th>
+            <th>Payment</th>
+            <th>Status</th>
+            <th>Courier</th>
+            <th>AWB Number</th>
+            <th>Tracking</th>
+          </tr>
+        </thead>
+        <tbody id="orderRows"></tbody>
+      </table>
+    </div>
   </div>
-</div>
 </section>
-<script type="module" src="admin.js?v=7"></script>
+
+<script type="module" src="admin.js?v=9"></script>
 </body>
 </html>
