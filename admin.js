@@ -59,7 +59,15 @@ function renderOrders(orders){
       <td>${o.customer?.phone || ""}</td>
       <td>${o.customer?.address || ""}, ${o.customer?.city || ""} - ${o.customer?.pincode || ""}</td>
       <td>${money(o.total)}</td>
-      <td>${o.customer?.payment || ""}</td>
+      <td>
+  <strong>${o.paymentMethod || "Cash on Delivery"}</strong><br>
+  <small>${o.paymentStatus || "Pending"}</small>
+  ${
+    o.paymentMethod === "UPI" && o.transactionId
+      ? `<br><small>Txn: ${o.transactionId}</small>`
+      : ""
+  }
+</td>
       <td>
         <select class="status" onchange="changeStatus('${o.id}',this.value)">
           <option ${o.status==="New"?"selected":""}>New</option>
