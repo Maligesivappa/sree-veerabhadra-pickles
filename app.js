@@ -776,10 +776,11 @@ document.addEventListener("keydown", (event) => {
 
 function updatePaymentSection() {
   const selectedPayment = $(
-    'input[name="payment"]:checked'
+    'input[name="paymentMethod"]:checked, input[name="payment"]:checked'
   )?.value?.toLowerCase();
 
   const upiSection =
+    $("#upiPaymentBox") ||
     $("#upiSection") ||
     $(".upi-section") ||
     $("[data-upi-section]");
@@ -800,7 +801,7 @@ function updatePaymentSection() {
   }
 }
 
-$$('input[name="payment"]').forEach((input) => {
+$$('input[name="paymentMethod"], input[name="payment"]').forEach((input) => {
   input.addEventListener("change", updatePaymentSection);
 });
 
@@ -837,12 +838,14 @@ if (checkoutForm) {
       const formData = new FormData(checkoutForm);
 
       const customerName = String(
+        formData.get("customerName") ||
         formData.get("name") ||
         formData.get("fullName") ||
         ""
       ).trim();
 
       const phone = String(
+        formData.get("customerPhone") ||
         formData.get("phone") ||
         formData.get("mobile") ||
         ""
@@ -851,26 +854,31 @@ if (checkoutForm) {
         .trim();
 
       const email = String(
+        formData.get("customerEmail") ||
         formData.get("email") || ""
       ).trim();
 
       const address = String(
+        formData.get("customerAddress") ||
         formData.get("address") ||
         formData.get("fullAddress") ||
         ""
       ).trim();
 
       const city = String(
+        formData.get("customerCity") ||
         formData.get("city") ||
         formData.get("town") ||
         ""
       ).trim();
 
       const customerState = String(
+        formData.get("customerState") ||
         formData.get("state") || ""
       ).trim();
 
       const pincode = String(
+        formData.get("customerPincode") ||
         formData.get("pincode") ||
         formData.get("pinCode") ||
         ""
@@ -885,6 +893,7 @@ if (checkoutForm) {
       ).trim();
 
       const paymentMethod = String(
+        formData.get("paymentMethod") ||
         formData.get("payment") ||
         "Cash on Delivery"
       ).trim();

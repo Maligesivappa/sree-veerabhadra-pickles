@@ -1,46 +1,14 @@
-SREE VEERABHADRA PICKLES — FIREBASE WEBSITE
-===========================================
+CHECKOUT VALIDATION FIX
 
-UPLOAD THESE FILES TO GITHUB
 1. Extract this ZIP.
-2. In your GitHub repository, upload all files and the assets folder.
-3. Replace old files when asked.
-4. Commit changes.
-5. Wait 1–2 minutes and refresh GitHub Pages.
+2. Copy app.js into your GitHub repository folder.
+3. Choose Replace when asked.
+4. In GitHub Desktop, commit with: Fix checkout validation
+5. Click Push origin.
+6. Open the website and press Ctrl + F5.
 
-BEFORE ADMIN LOGIN WORKS
-Firebase Console:
-1. Open Authentication.
-2. Click Get started.
-3. Enable Email/Password.
-4. Open Users.
-5. Add your admin email and password.
-
-FIRESTORE RULES
-1. Open Firestore > Rules.
-2. Replace existing rules with the content in firestore-rules.txt.
-3. Click Publish.
-
-ADMIN PAGE
-https://YOUR-GITHUB-PAGES-LINK/admin.html
-
-PRODUCTS
-Add products from the Admin Portal later:
-- Product name
-- Weight
-- MRP
-- Offer price
-- Image URL
-- Description
-- Stock
-
-ORDERS
-Customer orders are saved automatically to Firestore.
-Admin can update order status.
-
-UPI
-UPI is disabled for now. Add the PhonePe Business QR later.
-
-IMPORTANT
-Never put your Firebase admin password directly inside JavaScript.
-Use Firebase Authentication.
+Fixed:
+- Full Name false validation error
+- Phone, email, address, city, state and PIN field matching
+- COD/UPI payment field matching
+- UPI transaction section detection
