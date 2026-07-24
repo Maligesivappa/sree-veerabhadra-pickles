@@ -1,6 +1,7 @@
 import {
   db,
   auth,
+  storage,
   collection,
   addDoc,
   doc,
@@ -12,7 +13,10 @@ import {
   serverTimestamp,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL
 } from "./firebase.js";
 
 const $ = (selector) => document.querySelector(selector);
@@ -22,6 +26,34 @@ const money = (amount) =>
 let products = [];
 let orders = [];
 let adminStarted = false;
+let existingImageUrl = "";
+
+const imageInput = $("#productImage");
+const imagePreview = $("#imagePreview");
+const uploadProgressWrap = $("#uploadProgressWrap");
+const uploadProgressBar = $("#uploadProgressBar");
+const uploadStatus = $("#uploadStatus");
+
+imageInput.addEventListener("change", () => {
+  const file = imageInput.files?.[0];
+
+  if (!file) {
+    showImagePreview(existingImageUrl);
+    return;
+  }
+
+  const validationError = validateImageFile(file);
+  if (validationError) {
+    alert(validationError);
+    imageInput.value = "";
+    showImagePreview(existingImageUrl);
+    return;
+  }
+
+  const temporaryUrl = URL.createObjectURL(file);
+  showImagePreview(temporaryUrl);
+  imagePreview.onload = () => URL.revokeObjectURL(temporaryUrl);
+});
 
 $("#loginForm").addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -132,13 +164,15 @@ window.editProduct = (id) => {
     "weight",
     "mrp",
     "offerPrice",
-    "imageUrl",
     "description"
   ]) {
     form.elements[key].value = product[key] ?? "";
   }
 
   form.elements.inStock.value = String(product.inStock !== false);
+  existingImageUrl = product.imageUrl || "";
+  imageInput.value = "";
+  showImagePreview(existingImageUrl);
   $("#formTitle").textContent = "Edit Product";
   $("#cancelEdit").classList.remove("hidden");
 
@@ -160,20 +194,44 @@ $("#productForm").addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const form = event.target;
+  const submitButton = form.querySelector('button[type="submit"]');
   const data = Object.fromEntries(new FormData(form).entries());
+  const imageFile = imageInput.files?.[0];
 
-  const payload = {
-    name: data.name.trim(),
-    weight: data.weight.trim(),
-    mrp: Number(data.mrp),
-    offerPrice: Number(data.offerPrice),
-    imageUrl: data.imageUrl.trim(),
-    description: data.description.trim(),
-    inStock: data.inStock === "true",
-    updatedAt: serverTimestamp()
-  };
+  if (!imageFile && !existingImageUrl) {
+    alert("Please choose a product photo.");
+    imageInput.focus();
+    return;
+  }
+
+  if (imageFile) {
+    const validationError = validateImageFile(imageFile);
+    if (validationError) {
+      alert(validationError);
+      return;
+    }
+  }
+
+  submitButton.disabled = true;
+  submitButton.classList.add("loading-button");
+  submitButton.textContent = imageFile ? "Uploading Photo…" : "Saving…";
 
   try {
+    const imageUrl = imageFile
+      ? await uploadProductImage(imageFile, data.name)
+      : existingImageUrl;
+
+    const payload = {
+      name: data.name.trim(),
+      weight: data.weight.trim(),
+      mrp: Number(data.mrp),
+      offerPrice: Number(data.offerPrice),
+      imageUrl,
+      description: data.description.trim(),
+      inStock: data.inStock === "true",
+      updatedAt: serverTimestamp()
+    };
+
     if (data.id) {
       await updateDoc(doc(db, "products", data.id), payload);
     } else {
@@ -184,17 +242,105 @@ $("#productForm").addEventListener("submit", async (event) => {
     }
 
     resetForm();
+    alert(data.id ? "Product updated successfully." : "Product added successfully.");
   } catch (error) {
     console.error("Save product error:", error);
-    alert("Could not save product. Check Firestore rules and admin login.");
+    alert(
+      "Could not save the product. Enable Firebase Storage and check Storage/Firestore rules."
+    );
+  } finally {
+    submitButton.disabled = false;
+    submitButton.classList.remove("loading-button");
+    submitButton.textContent = "Save Product";
+    hideUploadProgress();
   }
 });
+
+function validateImageFile(file) {
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+  const maximumSize = 5 * 1024 * 1024;
+
+  if (!allowedTypes.includes(file.type)) {
+    return "Please choose a JPG, PNG or WebP image.";
+  }
+
+  if (file.size > maximumSize) {
+    return "The photo is larger than 5 MB. Please choose a smaller image.";
+  }
+
+  return "";
+}
+
+function uploadProductImage(file, productName) {
+  return new Promise((resolve, reject) => {
+    const safeName = String(productName || "product")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "product";
+
+    const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const storagePath = `product-images/${Date.now()}-${safeName}.${extension}`;
+    const storageReference = ref(storage, storagePath);
+    const uploadTask = uploadBytesResumable(storageReference, file, {
+      contentType: file.type
+    });
+
+    showUploadProgress(0, "Uploading photo…");
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const percentage = Math.round(
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        );
+        showUploadProgress(percentage, `Uploading photo… ${percentage}%`);
+      },
+      reject,
+      async () => {
+        try {
+          const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
+          showUploadProgress(100, "Photo uploaded. Saving product…");
+          resolve(downloadUrl);
+        } catch (error) {
+          reject(error);
+        }
+      }
+    );
+  });
+}
+
+function showImagePreview(url) {
+  if (url) {
+    imagePreview.src = url;
+    imagePreview.classList.add("visible");
+  } else {
+    imagePreview.removeAttribute("src");
+    imagePreview.classList.remove("visible");
+  }
+}
+
+function showUploadProgress(percentage, message) {
+  uploadProgressWrap.classList.add("visible");
+  uploadProgressBar.style.width = `${percentage}%`;
+  uploadStatus.textContent = message;
+}
+
+function hideUploadProgress() {
+  uploadProgressWrap.classList.remove("visible");
+  uploadProgressBar.style.width = "0%";
+  uploadStatus.textContent = "Preparing upload…";
+}
 
 $("#cancelEdit").addEventListener("click", resetForm);
 
 function resetForm() {
   $("#productForm").reset();
   $("#productForm").elements.id.value = "";
+  existingImageUrl = "";
+  imageInput.value = "";
+  showImagePreview("");
+  hideUploadProgress();
   $("#formTitle").textContent = "Add Product";
   $("#cancelEdit").classList.add("hidden");
 }

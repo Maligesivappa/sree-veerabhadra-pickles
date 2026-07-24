@@ -1,0 +1,11 @@
+ADMIN PHOTO UPLOAD SETUP
+
+1. Copy admin.html, admin.js and firebase.js into your GitHub repository and replace the old files.
+2. Open Firebase Console > Build > Storage > Get started.
+3. Choose the default Storage location and finish setup.
+4. Open Storage > Rules. Replace the rules with the contents of storage-rules.txt and click Publish.
+5. Commit and push the files using GitHub Desktop.
+6. Open the admin page and press Ctrl + F5.
+7. Add or edit a product, choose a JPG/PNG/WebP photo (maximum 5 MB), and save.
+
+Important: The included rule permits any signed-in Firebase user to upload product photos. For stronger security, use a dedicated admin custom claim later.
