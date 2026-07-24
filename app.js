@@ -522,8 +522,19 @@ $("#checkoutForm").onsubmit =
     }
   };
 
-$("#year").textContent =
-  new Date().getFullYear();
+/* ==========================================
+   SAFE FOOTER YEAR
+   ========================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const yearElement = document.getElementById("year");
+
+  if (yearElement) {
+    yearElement.textContent = new Date().getFullYear();
+  }
+
+});
 
 const productsQuery = query(
   collection(db, "products"),
