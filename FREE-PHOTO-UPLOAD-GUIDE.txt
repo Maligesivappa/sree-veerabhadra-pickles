@@ -1,0 +1,12 @@
+FREE PRODUCT PHOTO WORKFLOW
+
+1. Open admin.html from the live GitHub Pages website using Chrome or Edge.
+2. Click "Select product-images Folder".
+3. Select the product-images folder inside your local GitHub repository.
+4. Choose a product photo and save the product.
+5. The photo is resized to a maximum of 1200 px and saved as WebP with a product-name filename.
+6. Open GitHub Desktop, commit the new/changed image, and push origin.
+
+Fallback: If folder access is unavailable, the photo downloads automatically. Move the downloaded .webp file into product-images, then commit and push.
+
+Important: Do not rename the generated file after saving the product because Firestore stores that exact path.

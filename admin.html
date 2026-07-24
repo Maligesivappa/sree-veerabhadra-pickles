@@ -401,6 +401,46 @@ tbody tr:hover{
   transition:width .2s ease;
 }
 
+.local-image-note{
+  margin:0;
+  padding:10px 12px;
+  border-radius:10px;
+  background:#eef8f1;
+  color:#245c35;
+  font-size:.84rem;
+  line-height:1.45;
+}
+
+.folder-row{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+.folder-status{
+  color:var(--admin-muted);
+  font-size:.82rem;
+  font-weight:700;
+}
+
+.product-thumb{
+  width:54px;
+  height:54px;
+  object-fit:cover;
+  border-radius:10px;
+  border:1px solid var(--admin-border);
+  background:#fff;
+}
+
+.product-search{
+  width:min(320px,100%);
+  padding:11px 13px;
+  border:1px solid var(--admin-border);
+  border-radius:11px;
+  font:inherit;
+}
+
 .upload-status{
   margin:0;
   color:var(--admin-muted);
@@ -550,16 +590,33 @@ tbody tr:hover{
         </label>
 
         <label class="form-label">
+          Category
+          <select name="category" required>
+            <option value="Pickles">Pickles</option>
+            <option value="Snacks">Snacks</option>
+            <option value="Sweets">Sweets</option>
+            <option value="Chikkis">Chikkis</option>
+            <option value="Powders">Powders</option>
+            <option value="Instant Mixes">Instant Mixes</option>
+          </select>
+        </label>
+
+        <label class="form-label">
           Product photo
           <span class="image-upload-box">
+            <div class="folder-row">
+              <button id="selectImageFolder" class="small" type="button">Select product-images Folder</button>
+              <span id="folderStatus" class="folder-status">Folder not selected</span>
+            </div>
             <input id="productImage" name="productImage" type="file" accept="image/jpeg,image/png,image/webp">
             <small>Choose a JPG, PNG or WebP photo. Maximum size: 5 MB.</small>
+            <p class="local-image-note">The photo is resized and saved as WebP. In Chrome or Edge, select your repository's <strong>product-images</strong> folder once. If folder access is unavailable, the prepared photo downloads automatically and you can move it into that folder.</p>
             <img id="imagePreview" class="image-preview" alt="Selected product preview">
             <span id="uploadProgressWrap" class="upload-progress-wrap">
               <span class="upload-progress" aria-hidden="true">
                 <span id="uploadProgressBar" class="upload-progress-bar"></span>
               </span>
-              <span id="uploadStatus" class="upload-status">Preparing upload…</span>
+              <span id="uploadStatus" class="upload-status">Preparing photo…</span>
             </span>
           </span>
         </label>
@@ -588,13 +645,16 @@ tbody tr:hover{
           <h3>Products</h3>
           <p id="productCount" class="order-count">0 products</p>
         </div>
+        <input id="productSearch" class="product-search" type="search" placeholder="Search products…">
       </div>
 
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
+              <th>Photo</th>
               <th>Name</th>
+              <th>Category</th>
               <th>Weight</th>
               <th>MRP</th>
               <th>Offer</th>

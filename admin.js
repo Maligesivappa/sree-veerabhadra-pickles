@@ -1,7 +1,6 @@
 import {
   db,
   auth,
-  storage,
   collection,
   addDoc,
   doc,
@@ -13,10 +12,7 @@ import {
   serverTimestamp,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL
+  onAuthStateChanged
 } from "./firebase.js";
 
 const $ = (selector) => document.querySelector(selector);
@@ -27,15 +23,19 @@ let products = [];
 let orders = [];
 let adminStarted = false;
 let existingImageUrl = "";
+let imageDirectoryHandle = null;
+let preparedImage = null;
 
 const imageInput = $("#productImage");
 const imagePreview = $("#imagePreview");
 const uploadProgressWrap = $("#uploadProgressWrap");
 const uploadProgressBar = $("#uploadProgressBar");
 const uploadStatus = $("#uploadStatus");
+const folderStatus = $("#folderStatus");
 
-imageInput.addEventListener("change", () => {
+imageInput.addEventListener("change", async () => {
   const file = imageInput.files?.[0];
+  preparedImage = null;
 
   if (!file) {
     showImagePreview(existingImageUrl);
@@ -50,10 +50,21 @@ imageInput.addEventListener("change", () => {
     return;
   }
 
-  const temporaryUrl = URL.createObjectURL(file);
-  showImagePreview(temporaryUrl);
-  imagePreview.onload = () => URL.revokeObjectURL(temporaryUrl);
+  try {
+    showUploadProgress(20, "Preparing photo preview…");
+    preparedImage = await prepareProductImage(file);
+    showImagePreview(URL.createObjectURL(preparedImage.blob));
+    imagePreview.onload = () => URL.revokeObjectURL(imagePreview.src);
+    showUploadProgress(100, `Ready: ${preparedImage.filename}`);
+  } catch (error) {
+    console.error("Photo preparation error:", error);
+    alert("Could not prepare this photo. Please try another image.");
+    imageInput.value = "";
+    hideUploadProgress();
+  }
 });
+
+$("#selectImageFolder").addEventListener("click", selectProductImagesFolder);
 
 $("#loginForm").addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -131,25 +142,35 @@ function startAdmin() {
 }
 
 function renderProducts() {
-  $("#productRows").innerHTML = products.length
-    ? products.map((product) => `
+  const searchText = ($("#productSearch")?.value || "").trim().toLowerCase();
+  const visibleProducts = products.filter((product) =>
+    [product.name, product.category, product.weight]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase()
+      .includes(searchText)
+  );
+
+  $("#productCount").textContent =
+    `${visibleProducts.length} product${visibleProducts.length === 1 ? "" : "s"}`;
+
+  $("#productRows").innerHTML = visibleProducts.length
+    ? visibleProducts.map((product) => `
       <tr>
+        <td><img class="product-thumb" src="${escapeAttribute(product.imageUrl || "logo.jpeg")}" alt=""></td>
         <td>${escapeHtml(product.name || "")}</td>
+        <td>${escapeHtml(product.category || "Uncategorised")}</td>
         <td>${escapeHtml(product.weight || "")}</td>
         <td>${money(product.mrp)}</td>
         <td>${money(product.offerPrice)}</td>
         <td>${product.inStock ? "Yes" : "No"}</td>
         <td>
-          <button class="small" onclick="editProduct('${product.id}')">
-            Edit
-          </button>
-          <button class="small danger" onclick="removeProduct('${product.id}')">
-            Delete
-          </button>
+          <button class="small" onclick="editProduct('${product.id}')">Edit</button>
+          <button class="small danger" onclick="removeProduct('${product.id}')">Delete</button>
         </td>
       </tr>
     `).join("")
-    : `<tr><td colspan="6">No products yet.</td></tr>`;
+    : `<tr><td colspan="8">No matching products.</td></tr>`;
 }
 
 window.editProduct = (id) => {
@@ -169,6 +190,7 @@ window.editProduct = (id) => {
     form.elements[key].value = product[key] ?? "";
   }
 
+  form.elements.category.value = product.category || "Pickles";
   form.elements.inStock.value = String(product.inStock !== false);
   existingImageUrl = product.imageUrl || "";
   imageInput.value = "";
@@ -214,18 +236,24 @@ $("#productForm").addEventListener("submit", async (event) => {
 
   submitButton.disabled = true;
   submitButton.classList.add("loading-button");
-  submitButton.textContent = imageFile ? "Uploading Photo…" : "Saving…";
+  submitButton.textContent = imageFile ? "Saving Photo…" : "Saving…";
 
   try {
-    const imageUrl = imageFile
-      ? await uploadProductImage(imageFile, data.name)
-      : existingImageUrl;
+    let imageUrl = existingImageUrl;
+    if (imageFile) {
+      const result = await savePreparedImage(data.name);
+      imageUrl = result.path;
+      if (result.downloaded) {
+        alert(`The prepared photo was downloaded as ${result.filename}. Move it into the product-images folder in your GitHub repository before pushing.`);
+      }
+    }
 
     const payload = {
       name: data.name.trim(),
       weight: data.weight.trim(),
       mrp: Number(data.mrp),
       offerPrice: Number(data.offerPrice),
+      category: data.category,
       imageUrl,
       description: data.description.trim(),
       inStock: data.inStock === "true",
@@ -246,7 +274,7 @@ $("#productForm").addEventListener("submit", async (event) => {
   } catch (error) {
     console.error("Save product error:", error);
     alert(
-      "Could not save the product. Enable Firebase Storage and check Storage/Firestore rules."
+      "Could not save the product. Check folder permission and Firestore rules."
     );
   } finally {
     submitButton.disabled = false;
@@ -271,43 +299,94 @@ function validateImageFile(file) {
   return "";
 }
 
-function uploadProductImage(file, productName) {
-  return new Promise((resolve, reject) => {
-    const safeName = String(productName || "product")
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "") || "product";
+async function selectProductImagesFolder() {
+  if (!("showDirectoryPicker" in window)) {
+    folderStatus.textContent = "Folder access is not supported here; download fallback will be used.";
+    return;
+  }
 
-    const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
-    const storagePath = `product-images/${Date.now()}-${safeName}.${extension}`;
-    const storageReference = ref(storage, storagePath);
-    const uploadTask = uploadBytesResumable(storageReference, file, {
-      contentType: file.type
-    });
+  try {
+    const handle = await window.showDirectoryPicker({ mode: "readwrite" });
+    imageDirectoryHandle = handle;
+    folderStatus.textContent = `Selected: ${handle.name}`;
 
-    showUploadProgress(0, "Uploading photo…");
+    if (handle.name !== "product-images") {
+      alert("Please select the product-images folder inside your website repository.");
+    }
+  } catch (error) {
+    if (error.name !== "AbortError") {
+      console.error("Folder selection error:", error);
+      alert("Could not access that folder.");
+    }
+  }
+}
 
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const percentage = Math.round(
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-        );
-        showUploadProgress(percentage, `Uploading photo… ${percentage}%`);
-      },
-      reject,
-      async () => {
-        try {
-          const downloadUrl = await getDownloadURL(uploadTask.snapshot.ref);
-          showUploadProgress(100, "Photo uploaded. Saving product…");
-          resolve(downloadUrl);
-        } catch (error) {
-          reject(error);
-        }
-      }
-    );
-  });
+async function prepareProductImage(file) {
+  const bitmap = await createImageBitmap(file);
+  const maximumDimension = 1200;
+  const scale = Math.min(1, maximumDimension / Math.max(bitmap.width, bitmap.height));
+  const width = Math.max(1, Math.round(bitmap.width * scale));
+  const height = Math.max(1, Math.round(bitmap.height * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d", { alpha: false });
+  context.fillStyle = "#ffffff";
+  context.fillRect(0, 0, width, height);
+  context.drawImage(bitmap, 0, 0, width, height);
+  bitmap.close();
+
+  const blob = await new Promise((resolve, reject) =>
+    canvas.toBlob(
+      (result) => result ? resolve(result) : reject(new Error("Image conversion failed")),
+      "image/webp",
+      0.86
+    )
+  );
+
+  return { blob, filename: "product.webp" };
+}
+
+function slugifyProductName(name) {
+  return String(name || "product")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "product";
+}
+
+async function savePreparedImage(productName) {
+  if (!preparedImage) {
+    const file = imageInput.files?.[0];
+    if (!file) throw new Error("No photo selected");
+    preparedImage = await prepareProductImage(file);
+  }
+
+  const filename = `${slugifyProductName(productName)}.webp`;
+  showUploadProgress(55, `Saving ${filename}…`);
+
+  if (imageDirectoryHandle) {
+    const permission = await imageDirectoryHandle.requestPermission({ mode: "readwrite" });
+    if (permission === "granted") {
+      const fileHandle = await imageDirectoryHandle.getFileHandle(filename, { create: true });
+      const writable = await fileHandle.createWritable();
+      await writable.write(preparedImage.blob);
+      await writable.close();
+      showUploadProgress(100, "Photo saved in product-images folder.");
+      return { path: `product-images/${filename}`, filename, downloaded: false };
+    }
+  }
+
+  const link = document.createElement("a");
+  const objectUrl = URL.createObjectURL(preparedImage.blob);
+  link.href = objectUrl;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+  showUploadProgress(100, "Photo downloaded. Move it into product-images.");
+  return { path: `product-images/${filename}`, filename, downloaded: true };
 }
 
 function showImagePreview(url) {
@@ -329,7 +408,7 @@ function showUploadProgress(percentage, message) {
 function hideUploadProgress() {
   uploadProgressWrap.classList.remove("visible");
   uploadProgressBar.style.width = "0%";
-  uploadStatus.textContent = "Preparing upload…";
+  uploadStatus.textContent = "Preparing photo…";
 }
 
 $("#cancelEdit").addEventListener("click", resetForm);
@@ -338,6 +417,7 @@ function resetForm() {
   $("#productForm").reset();
   $("#productForm").elements.id.value = "";
   existingImageUrl = "";
+  preparedImage = null;
   imageInput.value = "";
   showImagePreview("");
   hideUploadProgress();
@@ -586,6 +666,7 @@ document.querySelectorAll(".tab").forEach((button) => {
   });
 });
 
+$("#productSearch").addEventListener("input", renderProducts);
 $("#orderSearch").addEventListener("input", applyOrderFilters);
 $("#statusFilter").addEventListener("change", applyOrderFilters);
 

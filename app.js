@@ -52,13 +52,21 @@ function prepareProduct(product) {
   const originalName = product.name || product.title || "Homemade Product";
   const name = canonicalProductName(originalName);
   const localImage = PRODUCT_IMAGE_BY_NAME[name.toLowerCase()];
+  const savedImage = product.imageUrl || product.image || product.photo || "";
+  const isApprovedLocalImage =
+    savedImage.startsWith("product-images/") ||
+    savedImage.startsWith("product-photos/") ||
+    savedImage.startsWith("./product-images/") ||
+    savedImage.startsWith("./product-photos/");
 
   return {
     ...product,
     name,
-    // Use our matching local image for known catalogue items. This prevents
-    // old Firebase logo/honey URLs from appearing on pickle cards.
-    imageUrl: localImage || product.imageUrl || product.image || product.photo || "logo.jpeg"
+    // Prefer photos selected in the admin panel. For old external URLs, keep
+    // the matching catalogue image as a safe fallback.
+    imageUrl: isApprovedLocalImage
+      ? savedImage
+      : (localImage || savedImage || "logo.jpeg")
   };
 }
 
