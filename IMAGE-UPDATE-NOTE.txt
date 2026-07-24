@@ -1,0 +1,1 @@
+Product photos are launch-ready sample images cropped from the approved Sree Veerabhadra collage. Replace them later with your own product photos using the same filenames in product-photos/.

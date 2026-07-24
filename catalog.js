@@ -6,7 +6,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "500 g",
     "mrp": 170,
     "offerPrice": 140,
-    "imageUrl": "product-images/mango-avakaya-pickle.svg",
+    "imageUrl": "product-photos/mango-pickle.jpg",
     "description": "Traditional homemade mango avakaya pickle prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -18,7 +18,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "500 g",
     "mrp": 150,
     "offerPrice": 120,
-    "imageUrl": "product-images/tomato-pickle.svg",
+    "imageUrl": "product-photos/tomato-pickle.jpg",
     "description": "Traditional homemade tomato pickle prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -30,7 +30,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "500 g",
     "mrp": 165,
     "offerPrice": 135,
-    "imageUrl": "product-images/gongura-pickle.svg",
+    "imageUrl": "product-photos/gongura-pickle.jpg",
     "description": "Traditional homemade gongura pickle prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -42,7 +42,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "500 g",
     "mrp": 150,
     "offerPrice": 120,
-    "imageUrl": "product-images/lemon-pickle.svg",
+    "imageUrl": "product-photos/lemon-pickle.jpg",
     "description": "Traditional homemade lemon pickle prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -54,7 +54,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "500 g",
     "mrp": 180,
     "offerPrice": 150,
-    "imageUrl": "product-images/garlic-pickle.svg",
+    "imageUrl": "product-photos/pickle-selection.jpg",
     "description": "Traditional homemade garlic pickle prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -66,7 +66,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "500 g",
     "mrp": 160,
     "offerPrice": 130,
-    "imageUrl": "product-images/amla-pickle.svg",
+    "imageUrl": "product-photos/pickle-selection.jpg",
     "description": "Traditional homemade amla pickle prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -78,7 +78,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "500 g",
     "mrp": 160,
     "offerPrice": 130,
-    "imageUrl": "product-images/green-chilli-pickle.svg",
+    "imageUrl": "product-photos/pickle-selection.jpg",
     "description": "Traditional homemade green chilli pickle prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -90,7 +90,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "500 g",
     "mrp": 170,
     "offerPrice": 140,
-    "imageUrl": "product-images/mixed-vegetable-pickle.svg",
+    "imageUrl": "product-photos/pickle-selection.jpg",
     "description": "Traditional homemade mixed vegetable pickle prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -102,7 +102,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "250 g",
     "mrp": 130,
     "offerPrice": 110,
-    "imageUrl": "product-images/janthikalu.svg",
+    "imageUrl": "product-photos/murukku.jpg",
     "description": "Traditional homemade janthikalu prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -114,7 +114,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "250 g",
     "mrp": 130,
     "offerPrice": 110,
-    "imageUrl": "product-images/chekkalu.svg",
+    "imageUrl": "product-photos/murukku.jpg",
     "description": "Traditional homemade chekkalu prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -126,7 +126,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "250 g",
     "mrp": 130,
     "offerPrice": 110,
-    "imageUrl": "product-images/murukku.svg",
+    "imageUrl": "product-photos/murukku.jpg",
     "description": "Traditional homemade murukku prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -138,7 +138,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "250 g",
     "mrp": 140,
     "offerPrice": 115,
-    "imageUrl": "product-images/ribbon-pakoda.svg",
+    "imageUrl": "product-photos/murukku.jpg",
     "description": "Traditional homemade ribbon pakoda prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -150,7 +150,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "250 g",
     "mrp": 125,
     "offerPrice": 100,
-    "imageUrl": "product-images/boondi-mixture.svg",
+    "imageUrl": "product-photos/murukku.jpg",
     "description": "Traditional homemade boondi mixture prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -162,7 +162,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "250 g",
     "mrp": 130,
     "offerPrice": 105,
-    "imageUrl": "product-images/kara-sev.svg",
+    "imageUrl": "product-photos/murukku.jpg",
     "description": "Traditional homemade kara sev prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -174,7 +174,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "250 g",
     "mrp": 120,
     "offerPrice": 95,
-    "imageUrl": "product-images/masala-peanuts.svg",
+    "imageUrl": "product-photos/murukku.jpg",
     "description": "Traditional homemade masala peanuts prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -186,7 +186,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "250 g",
     "mrp": 135,
     "offerPrice": 110,
-    "imageUrl": "product-images/banana-chips.svg",
+    "imageUrl": "product-photos/murukku.jpg",
     "description": "Traditional homemade banana chips prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -198,7 +198,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "500 g",
     "mrp": 210,
     "offerPrice": 180,
-    "imageUrl": "product-images/ariselu.svg",
+    "imageUrl": "product-photos/laddu.jpg",
     "description": "Traditional homemade ariselu prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -210,7 +210,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "500 g",
     "mrp": 220,
     "offerPrice": 190,
-    "imageUrl": "product-images/sunnundalu.svg",
+    "imageUrl": "product-photos/laddu.jpg",
     "description": "Traditional homemade sunnundalu prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -222,7 +222,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "500 g",
     "mrp": 200,
     "offerPrice": 170,
-    "imageUrl": "product-images/boondi-laddu.svg",
+    "imageUrl": "product-photos/laddu.jpg",
     "description": "Traditional homemade boondi laddu prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -234,7 +234,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "500 g",
     "mrp": 195,
     "offerPrice": 165,
-    "imageUrl": "product-images/rava-laddu.svg",
+    "imageUrl": "product-photos/laddu.jpg",
     "description": "Traditional homemade rava laddu prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -246,7 +246,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "500 g",
     "mrp": 240,
     "offerPrice": 210,
-    "imageUrl": "product-images/mysore-pak.svg",
+    "imageUrl": "product-photos/laddu.jpg",
     "description": "Traditional homemade mysore pak prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -258,7 +258,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "500 g",
     "mrp": 180,
     "offerPrice": 150,
-    "imageUrl": "product-images/gavvalu.svg",
+    "imageUrl": "product-photos/laddu.jpg",
     "description": "Traditional homemade gavvalu prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -270,7 +270,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "500 g",
     "mrp": 210,
     "offerPrice": 180,
-    "imageUrl": "product-images/kajjikayalu.svg",
+    "imageUrl": "product-photos/laddu.jpg",
     "description": "Traditional homemade kajjikayalu prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -282,7 +282,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "6 pieces",
     "mrp": 190,
     "offerPrice": 160,
-    "imageUrl": "product-images/bobbatlu.svg",
+    "imageUrl": "product-photos/laddu.jpg",
     "description": "Traditional homemade bobbatlu prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -294,7 +294,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "250 g",
     "mrp": 110,
     "offerPrice": 90,
-    "imageUrl": "product-images/peanut-chikki.svg",
+    "imageUrl": "product-photos/chikki.jpg",
     "description": "Traditional homemade peanut chikki prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -306,7 +306,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "250 g",
     "mrp": 120,
     "offerPrice": 100,
-    "imageUrl": "product-images/sesame-chikki.svg",
+    "imageUrl": "product-photos/chikki.jpg",
     "description": "Traditional homemade sesame chikki prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -318,7 +318,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "250 g",
     "mrp": 210,
     "offerPrice": 180,
-    "imageUrl": "product-images/dry-fruit-chikki.svg",
+    "imageUrl": "product-photos/chikki.jpg",
     "description": "Traditional homemade dry fruit chikki prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -330,7 +330,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "250 g",
     "mrp": 135,
     "offerPrice": 110,
-    "imageUrl": "product-images/coconut-chikki.svg",
+    "imageUrl": "product-photos/chikki.jpg",
     "description": "Traditional homemade coconut chikki prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -342,7 +342,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "200 g",
     "mrp": 110,
     "offerPrice": 90,
-    "imageUrl": "product-images/karam-podi.svg",
+    "imageUrl": "product-photos/powder.jpg",
     "description": "Traditional homemade karam podi prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -354,7 +354,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "200 g",
     "mrp": 110,
     "offerPrice": 90,
-    "imageUrl": "product-images/idli-podi.svg",
+    "imageUrl": "product-photos/powder.jpg",
     "description": "Traditional homemade idli podi prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -366,7 +366,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "200 g",
     "mrp": 120,
     "offerPrice": 100,
-    "imageUrl": "product-images/curry-leaf-powder.svg",
+    "imageUrl": "product-photos/powder.jpg",
     "description": "Traditional homemade curry leaf powder prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -378,7 +378,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "200 g",
     "mrp": 125,
     "offerPrice": 105,
-    "imageUrl": "product-images/flaxseed-powder.svg",
+    "imageUrl": "product-photos/powder.jpg",
     "description": "Traditional homemade flaxseed powder prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -390,7 +390,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "200 g",
     "mrp": 115,
     "offerPrice": 95,
-    "imageUrl": "product-images/peanut-powder.svg",
+    "imageUrl": "product-photos/powder.jpg",
     "description": "Traditional homemade peanut powder prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -402,7 +402,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "200 g",
     "mrp": 110,
     "offerPrice": 90,
-    "imageUrl": "product-images/sambar-powder.svg",
+    "imageUrl": "product-photos/powder.jpg",
     "description": "Traditional homemade sambar powder prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -414,7 +414,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "200 g",
     "mrp": 110,
     "offerPrice": 90,
-    "imageUrl": "product-images/rasam-powder.svg",
+    "imageUrl": "product-photos/powder.jpg",
     "description": "Traditional homemade rasam powder prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -426,7 +426,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "250 g",
     "mrp": 120,
     "offerPrice": 100,
-    "imageUrl": "product-images/pulihora-mix.svg",
+    "imageUrl": "product-photos/instant-mix.jpg",
     "description": "Traditional homemade pulihora mix prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -438,7 +438,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "250 g",
     "mrp": 125,
     "offerPrice": 105,
-    "imageUrl": "product-images/vangibath-mix.svg",
+    "imageUrl": "product-photos/instant-mix.jpg",
     "description": "Traditional homemade vangibath mix prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -450,7 +450,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "250 g",
     "mrp": 130,
     "offerPrice": 110,
-    "imageUrl": "product-images/bisibele-bath-mix.svg",
+    "imageUrl": "product-photos/instant-mix.jpg",
     "description": "Traditional homemade bisibele bath mix prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -462,7 +462,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "250 g",
     "mrp": 120,
     "offerPrice": 100,
-    "imageUrl": "product-images/lemon-rice-mix.svg",
+    "imageUrl": "product-photos/instant-mix.jpg",
     "description": "Traditional homemade lemon rice mix prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
@@ -474,7 +474,7 @@ export const SAMPLE_PRODUCTS = [
     "weight": "250 g",
     "mrp": 125,
     "offerPrice": 105,
-    "imageUrl": "product-images/tamarind-rice-mix.svg",
+    "imageUrl": "product-photos/instant-mix.jpg",
     "description": "Traditional homemade tamarind rice mix prepared with carefully selected ingredients.",
     "inStock": true,
     "isSample": true
