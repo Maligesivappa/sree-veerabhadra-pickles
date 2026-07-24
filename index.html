@@ -33,6 +33,51 @@
 
   <!-- Main stylesheet -->
   <link rel="stylesheet" href="styles.css">
+
+  <style>
+    .product-category-filters{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:10px;
+      margin:26px auto 24px;
+    }
+    .category-filter{
+      border:1px solid rgba(112,56,29,.18);
+      background:#fff;
+      color:#572419;
+      padding:11px 17px;
+      border-radius:999px;
+      font:inherit;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 7px 20px rgba(70,35,20,.06);
+      transition:transform .2s ease,background .2s ease,color .2s ease,border-color .2s ease;
+    }
+    .category-filter:hover{
+      transform:translateY(-2px);
+      border-color:#a8321c;
+    }
+    .category-filter.active{
+      background:#a8321c;
+      border-color:#a8321c;
+      color:#fff;
+      box-shadow:0 10px 24px rgba(168,50,28,.22);
+    }
+    .product-filter-hidden{display:none !important;}
+    @media (max-width:640px){
+      .product-category-filters{
+        justify-content:flex-start;
+        flex-wrap:nowrap;
+        overflow-x:auto;
+        padding:3px 2px 10px;
+        scrollbar-width:none;
+      }
+      .product-category-filters::-webkit-scrollbar{display:none;}
+      .category-filter{white-space:nowrap;padding:10px 14px;}
+    }
+  </style>
+
 </head>
 
 <body>
@@ -534,6 +579,18 @@
             traditional powders with authentic Andhra-style flavours.
           </p>
 
+        </div>
+
+
+        <!-- Product Category Filters -->
+        <div class="product-category-filters" id="productCategoryFilters" aria-label="Filter products by category">
+          <button class="category-filter active" type="button" data-filter="all">All Products</button>
+          <button class="category-filter" type="button" data-filter="pickles">🫙 Pickles</button>
+          <button class="category-filter" type="button" data-filter="snacks">🍘 Snacks</button>
+          <button class="category-filter" type="button" data-filter="sweets">🍬 Sweets</button>
+          <button class="category-filter" type="button" data-filter="chikkis">🥜 Chikkis</button>
+          <button class="category-filter" type="button" data-filter="powders">🌾 Powders</button>
+          <button class="category-filter" type="button" data-filter="instant mixes">🍚 Instant Mixes</button>
         </div>
 
         <!-- Product Search -->
@@ -1765,6 +1822,67 @@
   ></div>
 
   <!-- Existing Firebase/app functionality -->
+
+  <script>
+    (() => {
+      const filters = document.getElementById("productCategoryFilters");
+      const grid = document.getElementById("productGrid");
+      const searchInput = document.getElementById("search");
+      if (!filters || !grid) return;
+
+      let activeFilter = "all";
+
+      const categoryWords = {
+        "pickles": ["pickle", "mango", "tomato", "gongura", "lemon", "garlic", "amla", "avakaya"],
+        "snacks": ["snack", "murukulu", "murukku", "janthikalu", "chekkalu", "mixture", "boondi", "pakoda"],
+        "sweets": ["sweet", "ariselu", "sunnundalu", "laddu", "ladoo", "gavvalu", "kajjikayalu", "bobbatlu"],
+        "chikkis": ["chikki", "nuvvula", "sesame", "groundnut", "peanut brittle"],
+        "powders": ["powder", "podi", "karam", "idli", "curry leaf", "flaxseed", "sambar", "rasam"],
+        "instant mixes": ["instant", "pulihora", "vangibath", "vangi bath", "mix"]
+      };
+
+      function getCardText(card) {
+        return (card.innerText + " " + (card.dataset.category || "")).toLowerCase();
+      }
+
+      function cardMatches(card) {
+        if (activeFilter === "all") return true;
+        const text = getCardText(card);
+        return (categoryWords[activeFilter] || [activeFilter]).some(word => text.includes(word));
+      }
+
+      function applyFilter() {
+        const cards = [...grid.children];
+        cards.forEach(card => {
+          card.classList.toggle("product-filter-hidden", !cardMatches(card));
+        });
+      }
+
+      filters.addEventListener("click", event => {
+        const button = event.target.closest(".category-filter");
+        if (!button) return;
+        activeFilter = button.dataset.filter;
+        filters.querySelectorAll(".category-filter").forEach(btn => btn.classList.remove("active"));
+        button.classList.add("active");
+        applyFilter();
+      });
+
+      document.querySelectorAll(".food-category-card[data-category]").forEach(card => {
+        card.addEventListener("click", () => {
+          const raw = card.dataset.category.toLowerCase();
+          const normalized = raw === "powders" ? "powders" : raw;
+          const button = filters.querySelector(`[data-filter="${normalized}"]`);
+          if (button) button.click();
+        });
+      });
+
+      if (searchInput) searchInput.addEventListener("input", () => setTimeout(applyFilter, 0));
+
+      new MutationObserver(applyFilter).observe(grid, {childList:true, subtree:true});
+      applyFilter();
+    })();
+  </script>
+
   <script type="module" src="app.js"></script>
 
   <!-- Homepage UI only -->
