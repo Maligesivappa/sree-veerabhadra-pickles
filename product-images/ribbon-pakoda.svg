@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe1a6"/><stop offset="1" stop-color="#fff7e8"/></linearGradient></defs>
+<rect width="800" height="600" rx="32" fill="url(#g)"/>
+<circle cx="400" cy="250" r="150" fill="#fff" opacity=".93"/>
+<ellipse cx="400" cy="270" rx="118" ry="72" fill="#9a5b13" opacity=".92"/>
+<ellipse cx="400" cy="244" rx="100" ry="48" fill="#f3a629" opacity=".85"/>
+<path d="M295 235 Q400 150 505 235" fill="none" stroke="#fff" stroke-width="16" opacity=".75"/>
+<text x="400" y="455" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#9a5b13">Ribbon Pakoda</text>
+<text x="400" y="505" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" fill="#5a4032">Sree Veerabhadra Homemade Foods</text>
+</svg>
