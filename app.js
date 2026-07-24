@@ -23,6 +23,45 @@ const state = {
   search: ""
 };
 
+const PRODUCT_ALIASES = {
+  "mango": "Mango Avakaya Pickle",
+  "mango pickle": "Mango Avakaya Pickle",
+  "avakaya": "Mango Avakaya Pickle",
+  "tomato": "Tomato Pickle",
+  "gongura": "Gongura Pickle",
+  "lemon": "Lemon Pickle",
+  "garlic": "Garlic Pickle",
+  "amla": "Amla Pickle",
+  "green chilli": "Green Chilli Pickle",
+  "mixed vegetable": "Mixed Vegetable Pickle"
+};
+
+const PRODUCT_IMAGE_BY_NAME = Object.fromEntries(
+  SAMPLE_PRODUCTS.map((product) => [
+    String(product.name).trim().toLowerCase(),
+    product.imageUrl
+  ])
+);
+
+function canonicalProductName(value = "") {
+  const cleanName = String(value).trim();
+  return PRODUCT_ALIASES[cleanName.toLowerCase()] || cleanName;
+}
+
+function prepareProduct(product) {
+  const originalName = product.name || product.title || "Homemade Product";
+  const name = canonicalProductName(originalName);
+  const localImage = PRODUCT_IMAGE_BY_NAME[name.toLowerCase()];
+
+  return {
+    ...product,
+    name,
+    // Use our matching local image for known catalogue items. This prevents
+    // old Firebase logo/honey URLs from appearing on pickle cards.
+    imageUrl: localImage || product.imageUrl || product.image || product.photo || "logo.jpeg"
+  };
+}
+
 /* =========================================================
    SAFE HELPERS
 ========================================================= */
@@ -323,7 +362,7 @@ function loadProducts() {
     collection(db, "products"),
 
     (snapshot) => {
-      const firebaseProducts = snapshot.docs.map((document) => ({
+      const firebaseProducts = snapshot.docs.map((document) => prepareProduct({
         id: document.id,
         ...document.data()
       }));
@@ -331,7 +370,7 @@ function loadProducts() {
       // Keep the store full while real product details are being added.
       // Firebase products with the same name replace sample products.
       const firebaseNames = new Set(
-        firebaseProducts.map((product) => String(product.name || product.title || "").trim().toLowerCase())
+        firebaseProducts.map((product) => canonicalProductName(product.name || product.title || "").toLowerCase())
       );
       const remainingSamples = SAMPLE_PRODUCTS.filter(
         (product) => !firebaseNames.has(String(product.name).trim().toLowerCase())
