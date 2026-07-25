@@ -37,8 +37,23 @@ const SHIPPING_RATES = {
 const BUSINESS_UPI_ID = "Q312612926@ybl";
 const BUSINESS_UPI_NAME = "Sree Veerabhadra Homemade Foods";
 
-function getShippingCharge(customerState) {
-  return null;
+function parseWeightGrams(weight = "") {
+  const value = String(weight).toLowerCase().replace(/\s/g, "");
+  const amount = Number.parseFloat(value) || 0;
+  return value.includes("kg") ? amount * 1000 : amount;
+}
+
+function getCartWeightGrams() {
+  return state.cart.reduce((total, item) =>
+    total + (parseWeightGrams(item.weight) * Number(item.quantity || 1)), 0);
+}
+
+function getShippingCharge(subtotal) {
+  if (subtotal >= 2499) return 0;
+  const grams = getCartWeightGrams();
+  if (grams <= 250) return 90;
+  if (grams <= 500) return 120;
+  return Math.ceil(grams / 1000) * 160;
 }
 
 function getCouponDiscount(subtotal) {
@@ -58,16 +73,16 @@ function updateShippingSummary() {
   const customerState = $("#customerState")?.value || "";
   const subtotal = getCartTotal();
   const discount = getCouponDiscount(subtotal);
-  const shippingCharge = null;
-  const grandTotal = Math.max(0, subtotal - discount);
+  const shippingCharge = getShippingCharge(subtotal);
+  const grandTotal = Math.max(0, subtotal - discount) + shippingCharge;
 
   state.shippingCharge = shippingCharge;
   if ($("#checkoutSubtotal")) $("#checkoutSubtotal").textContent = formatPrice(subtotal);
   if ($("#checkoutDiscount")) $("#checkoutDiscount").textContent = discount ? `-${formatPrice(discount)}` : formatPrice(0);
-  if ($("#checkoutShipping")) $("#checkoutShipping").textContent = "Confirmed on WhatsApp";
+  if ($("#checkoutShipping")) $("#checkoutShipping").textContent = shippingCharge === 0 && subtotal >= 2499 ? "FREE" : formatPrice(shippingCharge);
   if ($("#checkoutGrandTotal")) $("#checkoutGrandTotal").textContent = formatPrice(grandTotal);
   if ($("#upiAmount")) $("#upiAmount").textContent = formatPrice(grandTotal);
-  if ($("#deliveryEstimate")) $("#deliveryEstimate").textContent = getDeliveryEstimate(customerState);
+  if ($("#deliveryEstimate")) $("#deliveryEstimate").textContent = `${getDeliveryEstimate(customerState)} Total packed weight: ${getCartWeightGrams()} g.`;
 
   return { subtotal, discount, shippingCharge, grandTotal };
 }
@@ -168,7 +183,7 @@ function showToast(message) {
 
 function downloadInvoice(order) {
   const itemRows = (order.items || []).map((item) => `<tr><td>${escapeHTML(item.name)} ${escapeHTML(item.weight || "")}</td><td>${item.quantity}</td><td>${formatPrice(item.price)}</td><td>${formatPrice(item.itemTotal)}</td></tr>`).join("");
-  const html = `<!doctype html><html><head><meta charset="utf-8"><title>${order.orderReference}</title><style>body{font-family:Arial;max-width:800px;margin:30px auto;color:#222}h1{color:#8f2918}table{width:100%;border-collapse:collapse;margin:20px 0}th,td{padding:10px;border:1px solid #ddd;text-align:left}.total{text-align:right}.note{background:#fff4dd;padding:14px}</style></head><body><h1>Sree Veerabhadra Homemade Foods</h1><h2>Provisional Invoice / Order Receipt</h2><p><strong>Order:</strong> ${order.orderReference}</p><p><strong>Customer:</strong> ${escapeHTML(order.customer.name)}<br>${escapeHTML(order.customer.phone)}<br>${escapeHTML(order.customer.address)}, ${escapeHTML(order.customer.city)}, ${escapeHTML(order.customer.state)} - ${escapeHTML(order.customer.pincode)}</p><table><thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Amount</th></tr></thead><tbody>${itemRows}</tbody></table><p class="total">Subtotal: ${formatPrice(order.subtotal)}<br>Coupon discount: -${formatPrice(order.discount || 0)}<br><strong>Products total: ${formatPrice(order.total)}</strong></p><p class="note"><strong>Shipping:</strong> Shiprocket quote pending. Final payable total will be confirmed on WhatsApp.</p><p>WhatsApp: +91 94902 10173</p></body></html>`;
+  const html = `<!doctype html><html><head><meta charset="utf-8"><title>${order.orderReference}</title><style>body{font-family:Arial;max-width:800px;margin:30px auto;color:#222}h1{color:#8f2918}table{width:100%;border-collapse:collapse;margin:20px 0}th,td{padding:10px;border:1px solid #ddd;text-align:left}.total{text-align:right}.note{background:#fff4dd;padding:14px}</style></head><body><h1>Sree Veerabhadra Homemade Foods</h1><h2>Order Invoice</h2><p><strong>Order:</strong> ${order.orderReference}</p><p><strong>Customer:</strong> ${escapeHTML(order.customer.name)}<br>${escapeHTML(order.customer.phone)}<br>${escapeHTML(order.customer.address)}, ${escapeHTML(order.customer.city)}, ${escapeHTML(order.customer.state)} - ${escapeHTML(order.customer.pincode)}</p><table><thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Amount</th></tr></thead><tbody>${itemRows}</tbody></table><p class="total">Subtotal: ${formatPrice(order.subtotal)}<br>Coupon discount: -${formatPrice(order.discount || 0)}<br>Delivery: ${order.shippingCharge === 0 ? "FREE" : formatPrice(order.shippingCharge)}<br><strong>Final total: ${formatPrice(order.total)}</strong></p><p class="note">Free delivery is available when the product subtotal is ₹2,499 or more.</p><p>WhatsApp: +91 94902 10173</p></body></html>`;
   const link = document.createElement("a");
   link.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
   link.download = `${order.orderReference}-invoice.html`;
@@ -189,8 +204,8 @@ function notifySellerOnWhatsApp(order) {
     "",
     products,
     "",
-    `Products total: ${formatPrice(order.total)}`,
-    "Shipping: Shiprocket quote pending",
+    `Final total: ${formatPrice(order.total)}`,
+    `Shipping: ${formatPrice(order.shippingCharge)}${order.shippingCharge === 0 ? " (FREE DELIVERY)" : ""}`,
     `Payment: ${order.paymentMethod}`
   ].join("\n");
   window.open(`https://wa.me/919490210173?text=${encodeURIComponent(message)}`, "_blank", "noopener");
@@ -921,7 +936,7 @@ function updatePaymentSection() {
   }
 
   if (transactionInput) {
-    transactionInput.required = false;
+    transactionInput.required = Boolean(isUPI);
   }
 }
 
@@ -1085,6 +1100,10 @@ if (checkoutForm) {
         );
       }
 
+      if (paymentMethod.toLowerCase().includes("upi") && !transactionId) {
+        throw new Error("Please complete the UPI payment and enter the transaction ID.");
+      }
+
       const orderItems = state.cart.map((item) => ({
         productId: item.productId || item.id,
         name: item.name,
@@ -1097,8 +1116,8 @@ if (checkoutForm) {
 
       const subtotal = getCartTotal();
       const discount = getCouponDiscount(subtotal);
-      const shippingCharge = null;
-      const orderTotal = Math.max(0, subtotal - discount);
+      const shippingCharge = getShippingCharge(subtotal);
+      const orderTotal = Math.max(0, subtotal - discount) + shippingCharge;
 
       const orderReference =
         "SVHF-" +
@@ -1134,10 +1153,11 @@ if (checkoutForm) {
         couponCode: state.appliedCoupon?.code || "",
         total: orderTotal,
         shippingCharge,
-        finalTotalPending: true,
+        totalWeightGrams: getCartWeightGrams(),
+        finalTotalPending: false,
         paymentMethod,
-        paymentStatus: "Awaiting Shiprocket quote",
-        transactionId: "",
+        paymentStatus: paymentMethod === "COD" ? "Pay on Delivery" : "Verification Pending",
+        transactionId: paymentMethod.toLowerCase().includes("upi") ? transactionId : "",
 
         notes,
         status: "New",
@@ -1163,7 +1183,7 @@ if (checkoutForm) {
 
       window.setTimeout(() => {
         alert(
-          `Order request received!\n\nOrder ID: ${orderReference}\nItems: ${formatPrice(subtotal)}\nCoupon discount: ${formatPrice(discount)}\nProducts total: ${formatPrice(orderTotal)}\n\nWe will check the exact Shiprocket charge and send the final total on WhatsApp before payment.`
+          `Order placed successfully!\n\nOrder ID: ${orderReference}\nItems: ${formatPrice(subtotal)}\nCoupon discount: ${formatPrice(discount)}\nShipping: ${shippingCharge === 0 ? "FREE" : formatPrice(shippingCharge)}\nFinal total: ${formatPrice(orderTotal)}`
         );
       }, 400);
     } catch (error) {

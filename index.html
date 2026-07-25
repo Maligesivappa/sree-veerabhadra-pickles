@@ -100,11 +100,13 @@
       <div class="announcement-info">
         <span>Delivery Across India</span>
         <span class="announcement-dot">•</span>
-        <span>Shipping charges apply</span>
+        <span class="free-delivery-announcement">FREE DELIVERY ABOVE ₹2,499</span>
       </div>
 
     </div>
   </div>
+
+  <div class="free-delivery-banner">🚚 FREE DELIVERY ON ORDERS ₹2,499 AND ABOVE</div>
 
   <!-- =====================================================
        HEADER / NAVBAR
@@ -1713,7 +1715,7 @@
 
         <!-- UPI box required by app.js -->
         <div class="upi-payment-box hidden" id="upiPaymentBox">
-          <p class="shipping-payment-note"><strong>UPI selected.</strong><br>Submit your order request first. We will send the final Shiprocket charge and UPI payment link on WhatsApp.</p>
+          <p class="shipping-payment-note"><strong>UPI selected.</strong><br>Pay the exact final total shown below, then enter the transaction ID.</p>
 
           <div class="upi-payment-heading">
 
@@ -1811,8 +1813,8 @@
         </div>
         <div class="summary-line"><span>Items subtotal</span><strong id="checkoutSubtotal">â‚¹0</strong></div>
         <div class="summary-line"><span>Coupon discount</span><strong id="checkoutDiscount">₹0</strong></div>
-        <div class="summary-line"><span>Shiprocket shipping</span><strong id="checkoutShipping">Confirmed on WhatsApp</strong></div>
-        <div class="summary-line summary-grand-total"><span>Products total</span><strong id="checkoutGrandTotal">₹0</strong></div>
+        <div class="summary-line"><span>Delivery charge</span><strong id="checkoutShipping">₹0</strong></div>
+        <div class="summary-line summary-grand-total"><span>Final total</span><strong id="checkoutGrandTotal">₹0</strong></div>
       </div>
 
       <div class="checkout-notice">
@@ -1940,7 +1942,7 @@
   </script>
 
   <script type="module" src="auth-nav.js?v=2"></script>
-  <script type="module" src="app.js?v=18"></script>
+  <script type="module" src="app.js?v=20"></script>
 
 </body>
 </html>
