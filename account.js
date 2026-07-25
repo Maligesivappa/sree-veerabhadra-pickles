@@ -5,6 +5,7 @@ import {
   getDocs,
   doc,
   getDoc,
+  setDoc,
   query,
   where,
   onAuthStateChanged,
@@ -17,6 +18,9 @@ const customerPhone = document.getElementById("customerPhone");
 const ordersLoading = document.getElementById("ordersLoading");
 const ordersList = document.getElementById("ordersList");
 const logoutBtn = document.getElementById("logoutBtn");
+const accountPhone = document.getElementById("accountPhone");
+const savePhoneBtn = document.getElementById("savePhoneBtn");
+let signedInUser = null;
 
 const money = (amount) =>
   `₹${Number(amount || 0).toLocaleString("en-IN")}`;
@@ -193,6 +197,7 @@ async function loadProfile(user) {
 
       customerPhone.textContent =
         profile.phone || "Not available";
+      if (accountPhone) accountPhone.value = profile.phone || "";
     }
   } catch (error) {
     console.error("Profile error:", error);
@@ -233,8 +238,24 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
+  signedInUser = user;
   const profile = await loadProfile(user);
   await loadOrders(user, profile.phone || "");
+});
+
+savePhoneBtn?.addEventListener("click", async () => {
+  const phone = String(accountPhone.value || "").replace(/\D/g, "");
+  if (!signedInUser || !/^[0-9]{10}$/.test(phone)) return alert("Enter a valid 10-digit phone number.");
+  await setDoc(doc(db, "customers", signedInUser.uid), {
+    uid: signedInUser.uid,
+    name: signedInUser.displayName || "Customer",
+    email: signedInUser.email || "",
+    phone
+  }, { merge: true });
+  customerPhone.textContent = phone;
+  ordersLoading.classList.remove("hidden");
+  ordersLoading.textContent = "Loading your orders...";
+  await loadOrders(signedInUser, phone);
 });
 
 logoutBtn.addEventListener("click", async () => {

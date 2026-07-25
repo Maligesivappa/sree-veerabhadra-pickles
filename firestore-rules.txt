@@ -8,6 +8,12 @@ service cloud.firestore {
       allow create, update, delete: if request.auth != null;
     }
 
+    match /customers/{customerId} {
+      allow read, create, update: if request.auth != null &&
+        (request.auth.uid == customerId || request.auth.token.email == "admin@sreeveerabhadra.com");
+      allow delete: if request.auth != null && request.auth.token.email == "admin@sreeveerabhadra.com";
+    }
+
     match /orders/{orderId} {
       allow create: if true;
       allow read: if request.auth != null &&
