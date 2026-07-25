@@ -168,7 +168,7 @@ function showToast(message) {
 
 function downloadInvoice(order) {
   const itemRows = (order.items || []).map((item) => `<tr><td>${escapeHTML(item.name)} ${escapeHTML(item.weight || "")}</td><td>${item.quantity}</td><td>${formatPrice(item.price)}</td><td>${formatPrice(item.itemTotal)}</td></tr>`).join("");
-  const html = `<!doctype html><html><head><meta charset="utf-8"><title>${order.orderReference}</title><style>body{font-family:Arial;max-width:800px;margin:30px auto;color:#222}h1{color:#8f2918}table{width:100%;border-collapse:collapse;margin:20px 0}th,td{padding:10px;border:1px solid #ddd;text-align:left}.total{text-align:right}.note{background:#fff4dd;padding:14px}</style></head><body><h1>Sree Veerabhadra Homemade Foods</h1><h2>Provisional Invoice / Order Receipt</h2><p><strong>Order:</strong> ${order.orderReference}</p><p><strong>Customer:</strong> ${escapeHTML(order.customer.name)}<br>${escapeHTML(order.customer.phone)}<br>${escapeHTML(order.customer.address)}, ${escapeHTML(order.customer.city)}, ${escapeHTML(order.customer.state)} - ${escapeHTML(order.customer.pincode)}</p><table><thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Amount</th></tr></thead><tbody>${itemRows}</tbody></table><p class="total">Subtotal: ${formatPrice(order.subtotal)}<br>Coupon discount: -${formatPrice(order.discount || 0)}<br><strong>Products total: ${formatPrice(order.total)}</strong></p><p class="note"><strong>Shipping:</strong> Shiprocket quote pending. Final payable total will be confirmed on WhatsApp.</p><p>WhatsApp: +91 99852 22440</p></body></html>`;
+  const html = `<!doctype html><html><head><meta charset="utf-8"><title>${order.orderReference}</title><style>body{font-family:Arial;max-width:800px;margin:30px auto;color:#222}h1{color:#8f2918}table{width:100%;border-collapse:collapse;margin:20px 0}th,td{padding:10px;border:1px solid #ddd;text-align:left}.total{text-align:right}.note{background:#fff4dd;padding:14px}</style></head><body><h1>Sree Veerabhadra Homemade Foods</h1><h2>Provisional Invoice / Order Receipt</h2><p><strong>Order:</strong> ${order.orderReference}</p><p><strong>Customer:</strong> ${escapeHTML(order.customer.name)}<br>${escapeHTML(order.customer.phone)}<br>${escapeHTML(order.customer.address)}, ${escapeHTML(order.customer.city)}, ${escapeHTML(order.customer.state)} - ${escapeHTML(order.customer.pincode)}</p><table><thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Amount</th></tr></thead><tbody>${itemRows}</tbody></table><p class="total">Subtotal: ${formatPrice(order.subtotal)}<br>Coupon discount: -${formatPrice(order.discount || 0)}<br><strong>Products total: ${formatPrice(order.total)}</strong></p><p class="note"><strong>Shipping:</strong> Shiprocket quote pending. Final payable total will be confirmed on WhatsApp.</p><p>WhatsApp: +91 94902 10173</p></body></html>`;
   const link = document.createElement("a");
   link.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
   link.download = `${order.orderReference}-invoice.html`;
@@ -193,7 +193,7 @@ function notifySellerOnWhatsApp(order) {
     "Shipping: Shiprocket quote pending",
     `Payment: ${order.paymentMethod}`
   ].join("\n");
-  window.open(`https://wa.me/919985222440?text=${encodeURIComponent(message)}`, "_blank", "noopener");
+  window.open(`https://wa.me/919490210173?text=${encodeURIComponent(message)}`, "_blank", "noopener");
 }
 
 function hideElement(element) {
