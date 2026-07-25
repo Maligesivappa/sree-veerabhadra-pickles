@@ -21,6 +21,7 @@ const money = (amount) =>
 
 let products = [];
 let orders = [];
+let coupons = [];
 let adminStarted = false;
 let existingImageUrl = "";
 let imageDirectoryHandle = null;
@@ -206,6 +207,11 @@ function startAdmin() {
         `<tr><td colspan="10">Could not load orders.</td></tr>`;
     }
   );
+
+  onSnapshot(collection(db, "coupons"), (snapshot) => {
+    coupons = snapshot.docs.map((couponDocument) => ({ id: couponDocument.id, ...couponDocument.data() }));
+    renderCoupons();
+  }, (error) => console.error("Coupons listener error:", error));
 }
 
 function renderProducts() {
@@ -579,6 +585,17 @@ function renderOrders(filteredOrders) {
           ? (order.paymentStatus || "Pay on Delivery")
           : (order.paymentStatus || "Verification Pending");
 
+      const orderedItems = Array.isArray(order.items) && order.items.length
+        ? order.items.map((item) => `
+            <div class="ordered-item">
+              <strong>${escapeHtml(item.name || "Product")}</strong>
+              ${item.weight ? `<span>${escapeHtml(item.weight)}</span>` : ""}
+              <span>Qty: ${Number(item.quantity || 1)}</span>
+              <span>${money(item.itemTotal ?? (Number(item.price || 0) * Number(item.quantity || 1)))}</span>
+            </div>
+          `).join("")
+        : "<small>No item details saved for this older order.</small>";
+
       return `
         <tr>
           <td>${orderId}</td>
@@ -591,10 +608,17 @@ function renderOrders(filteredOrders) {
             ${escapeHtml(order.customer?.pincode || "")}
           </td>
 
+          <td class="ordered-products-cell">${orderedItems}</td>
+
           <td>
             <strong>${money(order.total)}</strong><br>
             <small>Items: ${money(order.subtotal ?? (Number(order.total || 0) - Number(order.shippingCharge || 0)))}</small><br>
-            <small>Shipping: ${money(order.shippingCharge || 0)}</small>
+            ${order.shippingCharge == null
+              ? "<small>Shipping: Shiprocket quote pending</small>"
+              : `<small>Shipping: ${money(order.shippingCharge)}</small>`}
+            ${Number(order.discount || 0) > 0
+              ? `<br><small>Coupon ${escapeHtml(order.couponCode || "")}: -${money(order.discount)}</small>`
+              : ""}
           </td>
 
           <td>
@@ -756,8 +780,78 @@ document.querySelectorAll(".tab").forEach((button) => {
       "hidden",
       selectedTab !== "orders"
     );
+
+    $("#couponsTab").classList.toggle(
+      "hidden",
+      selectedTab !== "coupons"
+    );
   });
 });
+
+function renderCoupons() {
+  const rows = $("#couponRows");
+  if (!rows) return;
+  rows.innerHTML = coupons.length ? coupons.map((coupon) => `
+    <tr>
+      <td><strong>${escapeHtml(coupon.code || "")}</strong></td>
+      <td>${money(coupon.discountAmount)}</td>
+      <td>${money(coupon.minimumOrder)}</td>
+      <td>${escapeHtml(coupon.expiryDate || "No expiry")}</td>
+      <td>${coupon.active === false ? "Disabled" : "Active"}</td>
+      <td>
+        <button class="small" onclick="editCoupon('${coupon.id}')">Edit</button>
+        <button class="small danger" onclick="deleteCoupon('${coupon.id}')">Delete</button>
+      </td>
+    </tr>`).join("") : '<tr><td colspan="6">No coupons yet.</td></tr>';
+}
+
+function resetCouponForm() {
+  $("#couponForm")?.reset();
+  $("#couponId").value = "";
+  $("#couponDiscount").value = "100";
+  $("#couponMinimum").value = "1499";
+  $("#couponActive").checked = true;
+  $("#couponFormTitle").textContent = "Create Coupon";
+  $("#cancelCouponEdit").classList.add("hidden");
+}
+
+$("#couponForm")?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const id = $("#couponId").value;
+  const code = $("#adminCouponCode").value.trim().toUpperCase();
+  const duplicate = coupons.find((coupon) => coupon.id !== id && String(coupon.code).toUpperCase() === code);
+  if (duplicate) return alert("This coupon code already exists.");
+  const data = {
+    code,
+    discountAmount: Number($("#couponDiscount").value),
+    minimumOrder: Number($("#couponMinimum").value),
+    expiryDate: $("#couponExpiry").value || "",
+    active: $("#couponActive").checked,
+    updatedAt: serverTimestamp()
+  };
+  if (id) await updateDoc(doc(db, "coupons", id), data);
+  else await addDoc(collection(db, "coupons"), { ...data, createdAt: serverTimestamp() });
+  resetCouponForm();
+});
+
+window.editCoupon = (id) => {
+  const coupon = coupons.find((item) => item.id === id);
+  if (!coupon) return;
+  $("#couponId").value = id;
+  $("#adminCouponCode").value = coupon.code || "";
+  $("#couponDiscount").value = coupon.discountAmount || 0;
+  $("#couponMinimum").value = coupon.minimumOrder || 0;
+  $("#couponExpiry").value = coupon.expiryDate || "";
+  $("#couponActive").checked = coupon.active !== false;
+  $("#couponFormTitle").textContent = "Edit Coupon";
+  $("#cancelCouponEdit").classList.remove("hidden");
+};
+
+window.deleteCoupon = async (id) => {
+  if (confirm("Delete this coupon?")) await deleteDoc(doc(db, "coupons", id));
+};
+
+$("#cancelCouponEdit")?.addEventListener("click", resetCouponForm);
 
 $("#productSearch").addEventListener("input", renderProducts);
 $("#orderSearch").addEventListener("input", applyOrderFilters);

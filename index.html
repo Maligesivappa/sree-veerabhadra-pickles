@@ -1702,7 +1702,7 @@
 
               <span>
                 <strong>UPI Payment</strong>
-                <small>Scan the QR and enter your transaction ID.</small>
+                <small>Pay after the final Shiprocket charge is confirmed.</small>
               </span>
 
             </span>
@@ -1713,6 +1713,7 @@
 
         <!-- UPI box required by app.js -->
         <div class="upi-payment-box hidden" id="upiPaymentBox">
+          <p class="shipping-payment-note"><strong>UPI selected.</strong><br>Submit your order request first. We will send the final Shiprocket charge and UPI payment link on WhatsApp.</p>
 
           <div class="upi-payment-heading">
 
@@ -1796,16 +1797,22 @@
       </div>
 
       <div class="checkout-section checkout-order-summary" id="shippingSummary">
+        <div class="coupon-entry">
+          <input id="couponCode" type="text" placeholder="Coupon code" autocomplete="off">
+          <button id="applyCouponBtn" type="button">Apply</button>
+        </div>
+        <p class="coupon-message" id="couponMessage"></p>
         <div class="checkout-section-heading">
           <span class="checkout-step">3</span>
           <div>
             <h3>Order Summary</h3>
-            <p id="deliveryEstimate">Select your state to calculate delivery.</p>
+            <p id="deliveryEstimate">Exact Shiprocket charges will be confirmed on WhatsApp.</p>
           </div>
         </div>
         <div class="summary-line"><span>Items subtotal</span><strong id="checkoutSubtotal">â‚¹0</strong></div>
-        <div class="summary-line"><span>Shipping</span><strong id="checkoutShipping">Select state</strong></div>
-        <div class="summary-line summary-grand-total"><span>Grand total</span><strong id="checkoutGrandTotal">â‚¹0</strong></div>
+        <div class="summary-line"><span>Coupon discount</span><strong id="checkoutDiscount">₹0</strong></div>
+        <div class="summary-line"><span>Shiprocket shipping</span><strong id="checkoutShipping">Confirmed on WhatsApp</strong></div>
+        <div class="summary-line summary-grand-total"><span>Products total</span><strong id="checkoutGrandTotal">₹0</strong></div>
       </div>
 
       <div class="checkout-notice">
@@ -1813,7 +1820,7 @@
 
         <p>
           Please verify your phone number and delivery address
-          before placing the order. The total above includes shipping.
+          before placing the order. Shipping is added after we verify the exact Shiprocket rate.
         </p>
       </div>
 
@@ -1932,7 +1939,7 @@
     })();
   </script>
 
-  <script type="module" src="app.js?v=14"></script>
+  <script type="module" src="app.js?v=15"></script>
 
 </body>
 </html>

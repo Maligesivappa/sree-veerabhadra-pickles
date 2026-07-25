@@ -606,6 +606,7 @@ tbody tr:hover{
   <div class="tabs">
     <button class="tab active" type="button" data-tab="products">Products</button>
     <button class="tab" type="button" data-tab="orders">Orders</button>
+    <button class="tab" type="button" data-tab="coupons">Coupons</button>
   </div>
 
   <div id="productsTab" class="admin-grid">
@@ -706,6 +707,29 @@ tbody tr:hover{
 
   </div>
 
+  <div id="couponsTab" class="admin-grid hidden">
+    <div class="panel">
+      <h3 id="couponFormTitle">Create Coupon</h3>
+      <form id="couponForm" class="admin-form">
+        <input id="couponId" type="hidden">
+        <label>Coupon code<input id="adminCouponCode" placeholder="SURYA99" required></label>
+        <label>Discount amount (₹)<input id="couponDiscount" type="number" min="1" value="100" required></label>
+        <label>Minimum order (₹)<input id="couponMinimum" type="number" min="0" value="1499" required></label>
+        <label>Expiry date (optional)<input id="couponExpiry" type="date"></label>
+        <label><input id="couponActive" type="checkbox" checked> Active</label>
+        <button class="primary" type="submit">Save Coupon</button>
+        <button id="cancelCouponEdit" class="secondary hidden" type="button">Cancel Edit</button>
+      </form>
+    </div>
+    <div class="panel">
+      <h3>Coupons</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Code</th><th>Discount</th><th>Minimum</th><th>Expiry</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="couponRows"><tr><td colspan="6">No coupons yet.</td></tr></tbody>
+      </table></div>
+    </div>
+  </div>
+
   <div id="ordersTab" class="panel hidden">
 
     <div class="orders-header">
@@ -737,6 +761,7 @@ tbody tr:hover{
             <th>Customer</th>
             <th>Phone</th>
             <th>Address</th>
+            <th>Products Ordered</th>
             <th>Total</th>
             <th>Payment</th>
             <th>Status</th>
@@ -753,6 +778,6 @@ tbody tr:hover{
 
 </section>
 
-<script type="module" src="admin.js?v=12"></script>
+<script type="module" src="admin.js?v=13"></script>
 </body>
 </html>

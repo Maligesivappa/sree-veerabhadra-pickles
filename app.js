@@ -1,5 +1,6 @@
 import {
   db,
+  auth,
   collection,
   addDoc,
   onSnapshot,
@@ -16,10 +17,12 @@ const $$ = (selector) => [...document.querySelectorAll(selector)];
 
 const state = {
   products: [],
+  coupons: [],
+  appliedCoupon: null,
   cart: JSON.parse(localStorage.getItem("sv_cart") || "[]"),
   category: "all",
   search: "",
-  shippingCharge: 0
+  shippingCharge: null
 };
 
 const SHIPPING_RATES = {
@@ -35,8 +38,13 @@ const BUSINESS_UPI_ID = "Q312612926@ybl";
 const BUSINESS_UPI_NAME = "Sree Veerabhadra Homemade Foods";
 
 function getShippingCharge(customerState) {
-  if (!customerState) return 0;
-  return SHIPPING_RATES[customerState] ?? 120;
+  return null;
+}
+
+function getCouponDiscount(subtotal) {
+  const coupon = state.appliedCoupon;
+  if (!coupon || coupon.active === false) return 0;
+  return Math.min(Number(coupon.discountAmount) || 0, subtotal);
 }
 
 function getDeliveryEstimate(customerState) {
@@ -49,17 +57,19 @@ function getDeliveryEstimate(customerState) {
 function updateShippingSummary() {
   const customerState = $("#customerState")?.value || "";
   const subtotal = getCartTotal();
-  const shippingCharge = getShippingCharge(customerState);
-  const grandTotal = subtotal + shippingCharge;
+  const discount = getCouponDiscount(subtotal);
+  const shippingCharge = null;
+  const grandTotal = Math.max(0, subtotal - discount);
 
   state.shippingCharge = shippingCharge;
   if ($("#checkoutSubtotal")) $("#checkoutSubtotal").textContent = formatPrice(subtotal);
-  if ($("#checkoutShipping")) $("#checkoutShipping").textContent = customerState ? formatPrice(shippingCharge) : "Select state";
+  if ($("#checkoutDiscount")) $("#checkoutDiscount").textContent = discount ? `-${formatPrice(discount)}` : formatPrice(0);
+  if ($("#checkoutShipping")) $("#checkoutShipping").textContent = "Confirmed on WhatsApp";
   if ($("#checkoutGrandTotal")) $("#checkoutGrandTotal").textContent = formatPrice(grandTotal);
   if ($("#upiAmount")) $("#upiAmount").textContent = formatPrice(grandTotal);
   if ($("#deliveryEstimate")) $("#deliveryEstimate").textContent = getDeliveryEstimate(customerState);
 
-  return { subtotal, shippingCharge, grandTotal };
+  return { subtotal, discount, shippingCharge, grandTotal };
 }
 
 const PRODUCT_ALIASES = {
@@ -151,6 +161,16 @@ function showToast(message) {
   showToast.timer = window.setTimeout(() => {
     toast.classList.remove("show");
   }, 2500);
+}
+
+function downloadInvoice(order) {
+  const itemRows = (order.items || []).map((item) => `<tr><td>${escapeHTML(item.name)} ${escapeHTML(item.weight || "")}</td><td>${item.quantity}</td><td>${formatPrice(item.price)}</td><td>${formatPrice(item.itemTotal)}</td></tr>`).join("");
+  const html = `<!doctype html><html><head><meta charset="utf-8"><title>${order.orderReference}</title><style>body{font-family:Arial;max-width:800px;margin:30px auto;color:#222}h1{color:#8f2918}table{width:100%;border-collapse:collapse;margin:20px 0}th,td{padding:10px;border:1px solid #ddd;text-align:left}.total{text-align:right}.note{background:#fff4dd;padding:14px}</style></head><body><h1>Sree Veerabhadra Homemade Foods</h1><h2>Provisional Invoice / Order Receipt</h2><p><strong>Order:</strong> ${order.orderReference}</p><p><strong>Customer:</strong> ${escapeHTML(order.customer.name)}<br>${escapeHTML(order.customer.phone)}<br>${escapeHTML(order.customer.address)}, ${escapeHTML(order.customer.city)}, ${escapeHTML(order.customer.state)} - ${escapeHTML(order.customer.pincode)}</p><table><thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Amount</th></tr></thead><tbody>${itemRows}</tbody></table><p class="total">Subtotal: ${formatPrice(order.subtotal)}<br>Coupon discount: -${formatPrice(order.discount || 0)}<br><strong>Products total: ${formatPrice(order.total)}</strong></p><p class="note"><strong>Shipping:</strong> Shiprocket quote pending. Final payable total will be confirmed on WhatsApp.</p><p>WhatsApp: +91 99852 22440</p></body></html>`;
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+  link.download = `${order.orderReference}-invoice.html`;
+  link.click();
+  URL.revokeObjectURL(link.href);
 }
 
 function hideElement(element) {
@@ -463,6 +483,38 @@ function loadProducts() {
     }
   );
 }
+
+function loadCoupons() {
+  onSnapshot(collection(db, "coupons"), (snapshot) => {
+    state.coupons = snapshot.docs.map((document) => ({
+      id: document.id,
+      ...document.data()
+    }));
+  }, (error) => console.error("Coupon loading error:", error));
+}
+
+function applyCoupon() {
+  const input = $("#couponCode");
+  const message = $("#couponMessage");
+  const code = String(input?.value || "").trim().toUpperCase();
+  const subtotal = getCartTotal();
+  const coupon = state.coupons.find((item) => String(item.code || "").toUpperCase() === code);
+
+  state.appliedCoupon = null;
+  if (!coupon || coupon.active === false) {
+    if (message) message.textContent = "Coupon is invalid or inactive.";
+  } else if (coupon.expiryDate && new Date(`${coupon.expiryDate}T23:59:59`) < new Date()) {
+    if (message) message.textContent = "This coupon has expired.";
+  } else if (subtotal < Number(coupon.minimumOrder || 0)) {
+    if (message) message.textContent = `Minimum order is ${formatPrice(coupon.minimumOrder)}.`;
+  } else {
+    state.appliedCoupon = coupon;
+    if (message) message.textContent = `${code} applied. You save ${formatPrice(coupon.discountAmount)}.`;
+  }
+  updateShippingSummary();
+}
+
+$("#applyCouponBtn")?.addEventListener("click", applyCoupon);
 
 /* =========================================================
    SEARCH
@@ -846,7 +898,7 @@ function updatePaymentSection() {
   }
 
   if (transactionInput) {
-    transactionInput.required = Boolean(isUPI);
+    transactionInput.required = false;
   }
 }
 
@@ -1010,15 +1062,6 @@ if (checkoutForm) {
         );
       }
 
-      if (
-        paymentMethod.toLowerCase().includes("upi") &&
-        !transactionId
-      ) {
-        throw new Error(
-          "Please enter your UPI transaction ID."
-        );
-      }
-
       const orderItems = state.cart.map((item) => ({
         productId: item.productId || item.id,
         name: item.name,
@@ -1030,8 +1073,9 @@ if (checkoutForm) {
       }));
 
       const subtotal = getCartTotal();
-      const shippingCharge = getShippingCharge(customerState);
-      const orderTotal = subtotal + shippingCharge;
+      const discount = getCouponDiscount(subtotal);
+      const shippingCharge = null;
+      const orderTotal = Math.max(0, subtotal - discount);
 
       const orderReference =
         "SVHF-" +
@@ -1039,8 +1083,9 @@ if (checkoutForm) {
           .toString()
           .slice(-8);
 
-      await addDoc(collection(db, "orders"), {
+      const orderData = {
         orderReference,
+        userId: auth.currentUser?.uid || "",
 
         customer: {
           name: customerName,
@@ -1062,20 +1107,23 @@ if (checkoutForm) {
 
         items: orderItems,
         subtotal,
+        discount,
+        couponCode: state.appliedCoupon?.code || "",
         total: orderTotal,
         shippingCharge,
+        finalTotalPending: true,
         paymentMethod,
-        transactionId:
-          paymentMethod.toLowerCase().includes("upi")
-            ? transactionId
-            : "",
+        paymentStatus: "Awaiting Shiprocket quote",
+        transactionId: "",
 
         notes,
         status: "New",
         createdAt: serverTimestamp()
-      });
+      };
+      await addDoc(collection(db, "orders"), orderData);
 
       state.cart = [];
+      state.appliedCoupon = null;
       saveCart();
       renderCart();
 
@@ -1087,10 +1135,11 @@ if (checkoutForm) {
       showToast(
         `Order placed successfully. Order ID: ${orderReference}`
       );
+      downloadInvoice(orderData);
 
       window.setTimeout(() => {
         alert(
-          `Your order was placed successfully!\n\nOrder ID: ${orderReference}\nItems: ${formatPrice(subtotal)}\nShipping: ${formatPrice(shippingCharge)}\nTotal: ${formatPrice(orderTotal)}\n\n${getDeliveryEstimate(customerState)}`
+          `Order request received!\n\nOrder ID: ${orderReference}\nItems: ${formatPrice(subtotal)}\nCoupon discount: ${formatPrice(discount)}\nProducts total: ${formatPrice(orderTotal)}\n\nWe will check the exact Shiprocket charge and send the final total on WhatsApp before payment.`
         );
       }, 400);
     } catch (error) {
@@ -1166,6 +1215,7 @@ if (yearElement) {
 
 renderCart();
 loadProducts();
+loadCoupons();
 
 console.log(
   "Sree Veerabhadra Homemade Foods website loaded."
