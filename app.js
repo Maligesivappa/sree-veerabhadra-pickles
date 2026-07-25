@@ -691,6 +691,21 @@ function removeFromCart(productId) {
   showToast("Product removed from cart.");
 }
 
+function renderCheckoutItems() {
+  const summary = $("#checkoutItemsSummary");
+  if (!summary) return;
+  summary.innerHTML = state.cart.length ? state.cart.map((item) => `
+    <div class="checkout-item-row">
+      <img src="${escapeHTML(item.image || "logo.jpeg")}" alt="${escapeHTML(item.name)}" onerror="this.src='logo.jpeg'">
+      <div class="checkout-item-details">
+        <strong>${escapeHTML(item.name)}</strong>
+        <span>${escapeHTML(item.weight || "")} · Quantity: ${Number(item.quantity || 1)}</span>
+      </div>
+      <strong class="checkout-item-price">${formatPrice(Number(item.price || 0) * Number(item.quantity || 1))}</strong>
+    </div>
+  `).join("") : '<p class="checkout-empty-note">Your cart is empty.</p>';
+}
+
 function renderCart() {
   const cartItems = $("#cartItems");
   const cartCount = $("#cartCount");
@@ -706,6 +721,7 @@ function renderCart() {
     cartTotal.textContent = formatPrice(total);
   }
 
+  renderCheckoutItems();
   updateShippingSummary();
 
   if (!cartItems) {
