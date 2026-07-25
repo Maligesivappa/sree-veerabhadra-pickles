@@ -86,3 +86,6 @@ img{display:block;max-width:100%}a{color:inherit;text-decoration:none}button{cur
 
 /* Product pack-size selector */
 .variant-picker-label{display:grid;gap:7px;margin:12px 0;color:var(--primary-dark);font-size:.8rem;font-weight:850}.product-variant{width:100%;border:1px solid var(--border);border-radius:11px;padding:11px 12px;color:var(--primary-dark);background:#fff;font:inherit}.product-variant:focus{outline:3px solid rgba(213,163,60,.22);border-color:var(--gold)}.variant-price-display .product-price{display:flex;align-items:center;gap:10px;margin:14px 0}.variant-price-display strong{color:var(--primary);font-size:1.38rem}.variant-price-display del{color:var(--muted)}
+
+/* Checkout shipping calculator */
+.form-group select{width:100%;border:1px solid #d9c6b1;border-radius:11px;padding:12px;color:var(--text);background:#fff;font:inherit}.checkout-order-summary{display:grid;gap:14px}.summary-line{display:flex;align-items:center;justify-content:space-between;gap:20px;border-top:1px solid var(--border);padding-top:13px;color:var(--muted)}.summary-line strong{color:var(--primary-dark)}.summary-grand-total{font-size:1.12rem;font-weight:900}.summary-grand-total strong{color:var(--primary);font-size:1.4rem}

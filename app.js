@@ -18,8 +18,45 @@ const state = {
   products: [],
   cart: JSON.parse(localStorage.getItem("sv_cart") || "[]"),
   category: "all",
-  search: ""
+  search: "",
+  shippingCharge: 0
 };
+
+const SHIPPING_RATES = {
+  "Andhra Pradesh": 60,
+  "Telangana": 70,
+  "Karnataka": 80,
+  "Tamil Nadu": 90,
+  "Kerala": 100,
+  "Maharashtra": 100
+};
+
+function getShippingCharge(customerState) {
+  if (!customerState) return 0;
+  return SHIPPING_RATES[customerState] ?? 120;
+}
+
+function getDeliveryEstimate(customerState) {
+  if (!customerState) return "Select your state to calculate delivery.";
+  if (["Andhra Pradesh", "Telangana"].includes(customerState)) return "Estimated delivery: 3–5 business days.";
+  if (["Karnataka", "Tamil Nadu", "Kerala", "Maharashtra"].includes(customerState)) return "Estimated delivery: 4–7 business days.";
+  return "Estimated delivery: 5–8 business days.";
+}
+
+function updateShippingSummary() {
+  const customerState = $("#customerState")?.value || "";
+  const subtotal = getCartTotal();
+  const shippingCharge = getShippingCharge(customerState);
+  const grandTotal = subtotal + shippingCharge;
+
+  state.shippingCharge = shippingCharge;
+  if ($("#checkoutSubtotal")) $("#checkoutSubtotal").textContent = formatPrice(subtotal);
+  if ($("#checkoutShipping")) $("#checkoutShipping").textContent = customerState ? formatPrice(shippingCharge) : "Select state";
+  if ($("#checkoutGrandTotal")) $("#checkoutGrandTotal").textContent = formatPrice(grandTotal);
+  if ($("#deliveryEstimate")) $("#deliveryEstimate").textContent = getDeliveryEstimate(customerState);
+
+  return { subtotal, shippingCharge, grandTotal };
+}
 
 const PRODUCT_ALIASES = {
   "mango": "Mango Avakaya Pickle",
@@ -565,11 +602,6 @@ function renderCart() {
   const cartCount = $("#cartCount");
   const cartTotal = $("#cartTotal");
 
-  const checkoutTotal =
-    $("#checkoutTotal") ||
-    $("#paymentTotal") ||
-    $("#orderTotal");
-
   if (cartCount) {
     cartCount.textContent = getCartQuantity();
   }
@@ -580,9 +612,7 @@ function renderCart() {
     cartTotal.textContent = formatPrice(total);
   }
 
-  if (checkoutTotal) {
-    checkoutTotal.textContent = formatPrice(total);
-  }
+  updateShippingSummary();
 
   if (!cartItems) {
     return;
@@ -756,6 +786,7 @@ function openCheckout() {
 
   document.body.classList.add("no-scroll");
   renderCart();
+  updateShippingSummary();
 }
 
 function closeCheckout() {
@@ -820,6 +851,8 @@ $$('input[name="paymentMethod"], input[name="payment"]').forEach((input) => {
 });
 
 updatePaymentSection();
+
+$("#customerState")?.addEventListener("change", updateShippingSummary);
 
 /* =========================================================
    PLACE ORDER
@@ -938,6 +971,10 @@ if (checkoutForm) {
         throw new Error("Please enter your city or town.");
       }
 
+      if (!customerState) {
+        throw new Error("Please select your delivery state.");
+      }
+
       if (pincode && !/^[0-9]{6}$/.test(pincode)) {
         throw new Error(
           "Please enter a valid 6-digit PIN code."
@@ -963,7 +1000,9 @@ if (checkoutForm) {
           Number(item.price) * Number(item.quantity)
       }));
 
-      const orderTotal = getCartTotal();
+      const subtotal = getCartTotal();
+      const shippingCharge = getShippingCharge(customerState);
+      const orderTotal = subtotal + shippingCharge;
 
       const orderReference =
         "SVHF-" +
@@ -993,8 +1032,9 @@ if (checkoutForm) {
         pincode,
 
         items: orderItems,
+        subtotal,
         total: orderTotal,
-        shippingCharge: null,
+        shippingCharge,
         paymentMethod,
         transactionId:
           paymentMethod.toLowerCase().includes("upi")
@@ -1012,6 +1052,7 @@ if (checkoutForm) {
 
       checkoutForm.reset();
       updatePaymentSection();
+      updateShippingSummary();
       closeCheckout();
 
       showToast(
@@ -1020,7 +1061,7 @@ if (checkoutForm) {
 
       window.setTimeout(() => {
         alert(
-          `Your order was placed successfully!\n\nOrder ID: ${orderReference}\n\nWe will contact you regarding shipping charges and delivery.`
+          `Your order was placed successfully!\n\nOrder ID: ${orderReference}\nItems: ${formatPrice(subtotal)}\nShipping: ${formatPrice(shippingCharge)}\nTotal: ${formatPrice(orderTotal)}\n\n${getDeliveryEstimate(customerState)}`
         );
       }, 400);
     } catch (error) {

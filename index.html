@@ -1408,7 +1408,7 @@
       </div>
 
       <p class="shipping-note">
-        Shipping charges are calculated separately.
+        Shipping is calculated at checkout after you select your state.
       </p>
 
       <!-- Checkout button required by app.js -->
@@ -1567,13 +1567,49 @@
               State
             </label>
 
-            <input
-              type="text"
+            <select
               id="customerState"
               name="customerState"
-              placeholder="Enter state"
               required
             >
+              <option value="">Select your state</option>
+              <option>Andhra Pradesh</option>
+              <option>Telangana</option>
+              <option>Karnataka</option>
+              <option>Tamil Nadu</option>
+              <option>Kerala</option>
+              <option>Maharashtra</option>
+              <option>Arunachal Pradesh</option>
+              <option>Assam</option>
+              <option>Bihar</option>
+              <option>Chhattisgarh</option>
+              <option>Goa</option>
+              <option>Gujarat</option>
+              <option>Haryana</option>
+              <option>Himachal Pradesh</option>
+              <option>Jharkhand</option>
+              <option>Madhya Pradesh</option>
+              <option>Manipur</option>
+              <option>Meghalaya</option>
+              <option>Mizoram</option>
+              <option>Nagaland</option>
+              <option>Odisha</option>
+              <option>Punjab</option>
+              <option>Rajasthan</option>
+              <option>Sikkim</option>
+              <option>Tripura</option>
+              <option>Uttar Pradesh</option>
+              <option>Uttarakhand</option>
+              <option>West Bengal</option>
+              <option>Delhi</option>
+              <option>Jammu and Kashmir</option>
+              <option>Ladakh</option>
+              <option>Puducherry</option>
+              <option>Chandigarh</option>
+              <option>Andaman and Nicobar Islands</option>
+              <option>Dadra and Nagar Haveli and Daman and Diu</option>
+              <option>Lakshadweep</option>
+            </select>
           </div>
 
           <div class="form-group">
@@ -1759,12 +1795,25 @@
 
       </div>
 
+      <div class="checkout-section checkout-order-summary" id="shippingSummary">
+        <div class="checkout-section-heading">
+          <span class="checkout-step">3</span>
+          <div>
+            <h3>Order Summary</h3>
+            <p id="deliveryEstimate">Select your state to calculate delivery.</p>
+          </div>
+        </div>
+        <div class="summary-line"><span>Items subtotal</span><strong id="checkoutSubtotal">â‚¹0</strong></div>
+        <div class="summary-line"><span>Shipping</span><strong id="checkoutShipping">Select state</strong></div>
+        <div class="summary-line summary-grand-total"><span>Grand total</span><strong id="checkoutGrandTotal">â‚¹0</strong></div>
+      </div>
+
       <div class="checkout-notice">
         <span>ℹ️</span>
 
         <p>
           Please verify your phone number and delivery address
-          before placing the order. Shipping charges apply.
+          before placing the order. The total above includes shipping.
         </p>
       </div>
 
@@ -1883,7 +1932,7 @@
     })();
   </script>
 
-  <script type="module" src="app.js?v=12"></script>
+  <script type="module" src="app.js?v=13"></script>
 
 </body>
 </html>

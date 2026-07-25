@@ -28,3 +28,15 @@ PRESERVED
 - COD and UPI support
 - Customer account pages
 - Product photo folders and upload workflow
+
+SHIPPING CHARGES
+- Andhra Pradesh: Rs.60
+- Telangana: Rs.70
+- Karnataka: Rs.80
+- Tamil Nadu: Rs.90
+- Kerala: Rs.100
+- Maharashtra: Rs.100
+- All other states and union territories: Rs.120
+
+Customers select their state at checkout and see the items subtotal, shipping
+charge, final total and estimated delivery time before placing the order.

@@ -566,10 +566,13 @@ function renderOrders(filteredOrders) {
   $("#orderRows").innerHTML = filteredOrders.length
     ? filteredOrders.map((order) => {
       const orderId = order.id.slice(0, 8).toUpperCase();
-      const paymentMethod =
+      const savedPaymentMethod =
         order.paymentMethod ||
         order.customer?.payment ||
         "Cash on Delivery";
+      const paymentMethod = savedPaymentMethod === "COD"
+        ? "Cash on Delivery"
+        : savedPaymentMethod;
 
       const paymentStatus =
         paymentMethod === "Cash on Delivery"
@@ -588,7 +591,11 @@ function renderOrders(filteredOrders) {
             ${escapeHtml(order.customer?.pincode || "")}
           </td>
 
-          <td>${money(order.total)}</td>
+          <td>
+            <strong>${money(order.total)}</strong><br>
+            <small>Items: ${money(order.subtotal ?? (Number(order.total || 0) - Number(order.shippingCharge || 0)))}</small><br>
+            <small>Shipping: ${money(order.shippingCharge || 0)}</small>
+          </td>
 
           <td>
             <strong>${escapeHtml(paymentMethod)}</strong><br>
