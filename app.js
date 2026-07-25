@@ -176,6 +176,26 @@ function downloadInvoice(order) {
   URL.revokeObjectURL(link.href);
 }
 
+function notifySellerOnWhatsApp(order) {
+  const products = (order.items || []).map((item) =>
+    `• ${item.name} ${item.weight || ""} × ${item.quantity} = ${formatPrice(item.itemTotal)}`
+  ).join("\n");
+  const message = [
+    "NEW ORDER - Sree Veerabhadra Homemade Foods",
+    `Order ID: ${order.orderReference}`,
+    `Customer: ${order.customer.name}`,
+    `Phone: ${order.customer.phone}`,
+    `Address: ${order.customer.address}, ${order.customer.city}, ${order.customer.state} - ${order.customer.pincode}`,
+    "",
+    products,
+    "",
+    `Products total: ${formatPrice(order.total)}`,
+    "Shipping: Shiprocket quote pending",
+    `Payment: ${order.paymentMethod}`
+  ].join("\n");
+  window.open(`https://wa.me/919985222440?text=${encodeURIComponent(message)}`, "_blank", "noopener");
+}
+
 function hideElement(element) {
   if (element) {
     element.classList.add("hidden");
@@ -1139,6 +1159,7 @@ if (checkoutForm) {
         `Order placed successfully. Order ID: ${orderReference}`
       );
       downloadInvoice(orderData);
+      notifySellerOnWhatsApp(orderData);
 
       window.setTimeout(() => {
         alert(

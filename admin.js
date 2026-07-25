@@ -23,6 +23,7 @@ let products = [];
 let orders = [];
 let coupons = [];
 let adminStarted = false;
+let ordersLoadedOnce = false;
 let existingImageUrl = "";
 let imageDirectoryHandle = null;
 let preparedImage = null;
@@ -34,6 +35,26 @@ const uploadProgressBar = $("#uploadProgressBar");
 const uploadStatus = $("#uploadStatus");
 const folderStatus = $("#folderStatus");
 const variantsEditor = $("#variantsEditor");
+
+function playOrderAlert() {
+  try {
+    const context = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    oscillator.connect(gain); gain.connect(context.destination);
+    oscillator.frequency.value = 880; gain.gain.value = 0.12;
+    oscillator.start(); oscillator.stop(context.currentTime + 0.35);
+  } catch (error) { console.warn("Alert sound unavailable", error); }
+}
+
+$("#enableAlertsBtn")?.addEventListener("click", async () => {
+  if (!("Notification" in window)) return alert("Browser notifications are unavailable.");
+  const permission = await Notification.requestPermission();
+  if (permission === "granted") {
+    $("#enableAlertsBtn").textContent = "Order Alerts Enabled";
+    playOrderAlert();
+  }
+});
 
 function normaliseVariants(product = {}) {
   if (Array.isArray(product.variants) && product.variants.length) {
@@ -193,6 +214,18 @@ function startAdmin() {
   onSnapshot(
     collection(db, "orders"),
     (snapshot) => {
+      if (ordersLoadedOnce) {
+        snapshot.docChanges().filter((change) => change.type === "added").forEach((change) => {
+          const order = change.doc.data();
+          playOrderAlert();
+          if (Notification.permission === "granted") {
+            new Notification("New Sree Veerabhadra order", {
+              body: `${order.customer?.name || order.name || "Customer"} - ${money(order.total)}`,
+              icon: "logo.jpeg"
+            });
+          }
+        });
+      }
       orders = snapshot.docs.map((orderDocument) => ({
         id: orderDocument.id,
         ...orderDocument.data()
@@ -206,6 +239,7 @@ function startAdmin() {
 
       updateDashboard(orders);
       applyOrderFilters();
+      ordersLoadedOnce = true;
     },
     (error) => {
       console.error("Orders listener error:", error);
