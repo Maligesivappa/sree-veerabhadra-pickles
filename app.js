@@ -94,11 +94,14 @@ function prepareProduct(product) {
   const originalName = product.name || product.title || "Homemade Product";
   const name = canonicalProductName(originalName);
   const savedImage = product.imageUrl || product.image || product.photo || "";
+  const imageOverrides = {
+    "Mango Avakaya Pickle": "product-images/mango-pickle.jpeg"
+  };
 
   return {
     ...product,
     name,
-    imageUrl: savedImage || "logo.jpeg"
+    imageUrl: imageOverrides[name] || savedImage || "logo.jpeg"
   };
 }
 
