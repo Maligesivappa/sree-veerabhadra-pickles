@@ -53,6 +53,7 @@ function updateShippingSummary() {
   if ($("#checkoutSubtotal")) $("#checkoutSubtotal").textContent = formatPrice(subtotal);
   if ($("#checkoutShipping")) $("#checkoutShipping").textContent = customerState ? formatPrice(shippingCharge) : "Select state";
   if ($("#checkoutGrandTotal")) $("#checkoutGrandTotal").textContent = formatPrice(grandTotal);
+  if ($("#upiAmount")) $("#upiAmount").textContent = formatPrice(grandTotal);
   if ($("#deliveryEstimate")) $("#deliveryEstimate").textContent = getDeliveryEstimate(customerState);
 
   return { subtotal, shippingCharge, grandTotal };
