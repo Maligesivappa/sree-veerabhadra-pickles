@@ -488,6 +488,53 @@ tbody tr:hover{
     padding:16px;
   }
 }
+.variants-editor{
+  display:grid;
+  gap:10px;
+  margin-top:8px;
+}
+.variant-row{
+  display:grid;
+  grid-template-columns:1.15fr 1fr 1fr auto;
+  gap:8px;
+  align-items:end;
+  padding:10px;
+  border:1px solid #eadbc5;
+  border-radius:12px;
+  background:#fffaf1;
+}
+.variant-field{
+  display:grid;
+  gap:5px;
+  font-size:12px;
+  color:#6c5845;
+}
+.variant-field input{
+  min-width:0;
+}
+.remove-variant{
+  min-height:46px;
+}
+.add-variant-button{
+  margin-top:10px;
+  width:max-content;
+}
+.variant-summary{
+  display:grid;
+  gap:4px;
+  min-width:180px;
+}
+.variant-summary span{
+  white-space:nowrap;
+}
+@media (max-width:700px){
+  .variant-row{
+    grid-template-columns:1fr 1fr;
+  }
+  .remove-variant{
+    grid-column:1 / -1;
+  }
+}
 </style>
 </head>
 
@@ -574,20 +621,12 @@ tbody tr:hover{
           <input name="name" placeholder="Example: Mango Pickle" required>
         </label>
 
-        <label class="form-label">
-          Weight
-          <input name="weight" placeholder="Example: 500 g" required>
-        </label>
-
-        <label class="form-label">
-          MRP
-          <input name="mrp" type="number" min="0" step="1" placeholder="100" required>
-        </label>
-
-        <label class="form-label">
-          Offer price
-          <input name="offerPrice" type="number" min="0" step="1" placeholder="90" required>
-        </label>
+        <div class="form-label">
+          <span>Weights and prices</span>
+          <div id="variantsEditor" class="variants-editor"></div>
+          <button id="addVariant" class="small add-variant-button" type="button">+ Add another weight</button>
+          <small>Add the product once, then enter every available pack size and price.</small>
+        </div>
 
         <label class="form-label">
           Category
@@ -655,9 +694,7 @@ tbody tr:hover{
               <th>Photo</th>
               <th>Name</th>
               <th>Category</th>
-              <th>Weight</th>
-              <th>MRP</th>
-              <th>Offer</th>
+              <th>Weights and prices</th>
               <th>Stock</th>
               <th>Actions</th>
             </tr>
@@ -716,6 +753,6 @@ tbody tr:hover{
 
 </section>
 
-<script type="module" src="admin.js?v=10"></script>
+<script type="module" src="admin.js?v=11"></script>
 </body>
 </html>

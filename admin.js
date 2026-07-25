@@ -32,6 +32,73 @@ const uploadProgressWrap = $("#uploadProgressWrap");
 const uploadProgressBar = $("#uploadProgressBar");
 const uploadStatus = $("#uploadStatus");
 const folderStatus = $("#folderStatus");
+const variantsEditor = $("#variantsEditor");
+
+function normaliseVariants(product = {}) {
+  if (Array.isArray(product.variants) && product.variants.length) {
+    return product.variants.map((variant) => ({
+      weight: String(variant.weight || "").trim(),
+      mrp: Number(variant.mrp || 0),
+      offerPrice: Number(variant.offerPrice || 0)
+    }));
+  }
+
+  if (product.weight || product.mrp || product.offerPrice) {
+    return [{
+      weight: String(product.weight || "").trim(),
+      mrp: Number(product.mrp || 0),
+      offerPrice: Number(product.offerPrice || 0)
+    }];
+  }
+
+  return [{ weight: "", mrp: 0, offerPrice: 0 }];
+}
+
+function addVariantRow(variant = {}, removable = true) {
+  const row = document.createElement("div");
+  row.className = "variant-row";
+  row.innerHTML = `
+    <label class="variant-field">Weight
+      <input data-variant="weight" placeholder="250 g" value="${escapeAttribute(variant.weight || "")}" required>
+    </label>
+    <label class="variant-field">MRP
+      <input data-variant="mrp" type="number" min="0" step="1" placeholder="250" value="${Number(variant.mrp || 0) || ""}" required>
+    </label>
+    <label class="variant-field">Offer price
+      <input data-variant="offerPrice" type="number" min="0" step="1" placeholder="230" value="${Number(variant.offerPrice || 0) || ""}" required>
+    </label>
+    <button class="small danger remove-variant${removable ? "" : " hidden"}" type="button">Remove</button>
+  `;
+  row.querySelector(".remove-variant").addEventListener("click", () => {
+    row.remove();
+    updateVariantRemoveButtons();
+  });
+  variantsEditor.appendChild(row);
+  updateVariantRemoveButtons();
+}
+
+function updateVariantRemoveButtons() {
+  const rows = [...variantsEditor.querySelectorAll(".variant-row")];
+  rows.forEach((row) => {
+    row.querySelector(".remove-variant").classList.toggle("hidden", rows.length === 1);
+  });
+}
+
+function setVariantRows(variants) {
+  variantsEditor.innerHTML = "";
+  variants.forEach((variant) => addVariantRow(variant, variants.length > 1));
+}
+
+function readVariantRows() {
+  return [...variantsEditor.querySelectorAll(".variant-row")].map((row) => ({
+    weight: row.querySelector('[data-variant="weight"]').value.trim(),
+    mrp: Number(row.querySelector('[data-variant="mrp"]').value),
+    offerPrice: Number(row.querySelector('[data-variant="offerPrice"]').value)
+  }));
+}
+
+$("#addVariant").addEventListener("click", () => addVariantRow());
+setVariantRows(normaliseVariants());
 
 imageInput.addEventListener("change", async () => {
   const file = imageInput.files?.[0];
@@ -144,7 +211,7 @@ function startAdmin() {
 function renderProducts() {
   const searchText = ($("#productSearch")?.value || "").trim().toLowerCase();
   const visibleProducts = products.filter((product) =>
-    [product.name, product.category, product.weight]
+    [product.name, product.category, product.weight, ...normaliseVariants(product).map((variant) => variant.weight)]
       .filter(Boolean)
       .join(" ")
       .toLowerCase()
@@ -160,9 +227,9 @@ function renderProducts() {
         <td><img class="product-thumb" src="${escapeAttribute(product.imageUrl || "logo.jpeg")}" alt=""></td>
         <td>${escapeHtml(product.name || "")}</td>
         <td>${escapeHtml(product.category || "Uncategorised")}</td>
-        <td>${escapeHtml(product.weight || "")}</td>
-        <td>${money(product.mrp)}</td>
-        <td>${money(product.offerPrice)}</td>
+        <td><div class="variant-summary">${normaliseVariants(product).map((variant) =>
+          `<span>${escapeHtml(variant.weight)}: ${money(variant.offerPrice)}${variant.mrp > variant.offerPrice ? ` <del>${money(variant.mrp)}</del>` : ""}</span>`
+        ).join("")}</div></td>
         <td>${product.inStock ? "Yes" : "No"}</td>
         <td>
           <button class="small" onclick="editProduct('${product.id}')">Edit</button>
@@ -170,7 +237,7 @@ function renderProducts() {
         </td>
       </tr>
     `).join("")
-    : `<tr><td colspan="8">No matching products.</td></tr>`;
+    : `<tr><td colspan="6">No matching products.</td></tr>`;
 }
 
 window.editProduct = (id) => {
@@ -182,9 +249,6 @@ window.editProduct = (id) => {
   for (const key of [
     "id",
     "name",
-    "weight",
-    "mrp",
-    "offerPrice",
     "description"
   ]) {
     form.elements[key].value = product[key] ?? "";
@@ -192,6 +256,7 @@ window.editProduct = (id) => {
 
   form.elements.category.value = product.category || "Pickles";
   form.elements.inStock.value = String(product.inStock !== false);
+  setVariantRows(normaliseVariants(product));
   existingImageUrl = product.imageUrl || "";
   imageInput.value = "";
   showImagePreview(existingImageUrl);
@@ -219,6 +284,23 @@ $("#productForm").addEventListener("submit", async (event) => {
   const submitButton = form.querySelector('button[type="submit"]');
   const data = Object.fromEntries(new FormData(form).entries());
   const imageFile = imageInput.files?.[0];
+  const variants = readVariantRows();
+
+  if (variants.some((variant) => !variant.weight || variant.mrp <= 0 || variant.offerPrice <= 0)) {
+    alert("Enter a weight, MRP and offer price greater than zero for every pack size.");
+    return;
+  }
+
+  if (variants.some((variant) => variant.offerPrice > variant.mrp)) {
+    alert("Offer price cannot be higher than MRP.");
+    return;
+  }
+
+  const uniqueWeights = new Set(variants.map((variant) => variant.weight.toLowerCase()));
+  if (uniqueWeights.size !== variants.length) {
+    alert("Each weight must be different.");
+    return;
+  }
 
   if (!imageFile && !existingImageUrl) {
     alert("Please choose a product photo.");
@@ -250,15 +332,18 @@ $("#productForm").addEventListener("submit", async (event) => {
 
     const payload = {
       name: data.name.trim(),
-      weight: data.weight.trim(),
-      mrp: Number(data.mrp),
-      offerPrice: Number(data.offerPrice),
+      variants,
       category: data.category,
       imageUrl,
       description: data.description.trim(),
       inStock: data.inStock === "true",
       updatedAt: serverTimestamp()
     };
+
+    const firstVariant = payload.variants[0];
+    payload.weight = firstVariant.weight;
+    payload.mrp = firstVariant.mrp;
+    payload.offerPrice = firstVariant.offerPrice;
 
     if (data.id) {
       await updateDoc(doc(db, "products", data.id), payload);
@@ -416,6 +501,7 @@ $("#cancelEdit").addEventListener("click", resetForm);
 function resetForm() {
   $("#productForm").reset();
   $("#productForm").elements.id.value = "";
+  setVariantRows(normaliseVariants());
   existingImageUrl = "";
   preparedImage = null;
   imageInput.value = "";

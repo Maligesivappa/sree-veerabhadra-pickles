@@ -15,6 +15,8 @@ PRODUCTS
 - When Firestore contains no products, the storefront displays
   "Products coming soon".
 - Add real products later through the existing Admin Portal.
+- Add a product only once, then use "+ Add another weight" for pack sizes
+  such as 250 g, 500 g and 1 kg. Each size has its own MRP and offer price.
 - Products already stored in Firebase are not deleted by replacing website
   files. Delete any old test products from the Admin Portal if they still
   appear after deployment.

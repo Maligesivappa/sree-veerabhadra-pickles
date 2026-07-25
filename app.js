@@ -51,6 +51,22 @@ function prepareProduct(product) {
   };
 }
 
+function getProductVariants(product) {
+  if (Array.isArray(product.variants) && product.variants.length) {
+    return product.variants.map((variant) => ({
+      weight: String(variant.weight || "").trim(),
+      mrp: Number(variant.mrp || 0),
+      offerPrice: Number(variant.offerPrice ?? variant.price ?? 0)
+    }));
+  }
+
+  return [{
+    weight: String(product.weight || product.size || "").trim(),
+    mrp: Number(product.mrp ?? product.originalPrice ?? 0),
+    offerPrice: Number(product.offerPrice ?? product.salePrice ?? product.price ?? 0)
+  }];
+}
+
 /* =========================================================
    SAFE HELPERS
 ========================================================= */
@@ -203,10 +219,9 @@ function createProductCard(product) {
     product.description ||
     "Traditional homemade food prepared with care.";
 
-  const productWeight =
-    product.weight ||
-    product.size ||
-    "";
+  const variants = getProductVariants(product);
+  const selectedVariant = variants[0];
+  const productWeight = selectedVariant.weight;
 
   const productImage =
     product.image ||
@@ -214,20 +229,8 @@ function createProductCard(product) {
     product.photo ||
     "logo.jpeg";
 
-  const price =
-    Number(
-      product.offerPrice ??
-      product.salePrice ??
-      product.price ??
-      0
-    ) || 0;
-
-  const mrp =
-    Number(
-      product.mrp ??
-      product.originalPrice ??
-      0
-    ) || 0;
+  const price = selectedVariant.offerPrice;
+  const mrp = selectedVariant.mrp;
 
   const stockValue =
     product.inStock ??
@@ -276,17 +279,25 @@ function createProductCard(product) {
       <div class="product-content">
         <h3>${escapeHTML(productName)}</h3>
 
-        ${
-          productWeight
-            ? `<p class="product-weight">${escapeHTML(productWeight)}</p>`
-            : ""
+        ${variants.length > 1
+          ? `<label class="variant-picker-label">
+              Choose weight
+              <select class="product-variant" aria-label="Choose weight for ${escapeHTML(productName)}">
+                ${variants.map((variant, index) => `
+                  <option value="${index}" data-price="${variant.offerPrice}" data-mrp="${variant.mrp}">
+                    ${escapeHTML(variant.weight)} — ${formatPrice(variant.offerPrice)}
+                  </option>
+                `).join("")}
+              </select>
+            </label>`
+          : (productWeight ? `<p class="product-weight">${escapeHTML(productWeight)}</p>` : "")
         }
 
         <p class="product-description">
           ${escapeHTML(productDescription)}
         </p>
 
-        ${priceSection}
+        <div class="variant-price-display">${priceSection}</div>
 
         <button
           class="btn primary full add-to-cart"
@@ -477,7 +488,7 @@ function getCartTotal() {
   }, 0);
 }
 
-function addToCart(productId) {
+function addToCart(productId, variantIndex = 0) {
   const product = state.products.find(
     (item) => item.id === productId
   );
@@ -487,35 +498,28 @@ function addToCart(productId) {
     return;
   }
 
-  const existingItem = state.cart.find(
-    (item) => item.id === productId
-  );
+  const variants = getProductVariants(product);
+  const variant = variants[variantIndex] || variants[0];
+  const cartItemId = `${productId}::${variant.weight || variantIndex}`;
+  const existingItem = state.cart.find((item) => item.id === cartItemId);
 
   if (existingItem) {
     existingItem.quantity += 1;
   } else {
     state.cart.push({
-      id: product.id,
+      id: cartItemId,
+      productId: product.id,
       name:
         product.name ||
         product.title ||
         "Homemade Product",
-      price:
-        Number(
-          product.offerPrice ??
-          product.salePrice ??
-          product.price ??
-          0
-        ) || 0,
+      price: Number(variant.offerPrice || 0),
       image:
         product.image ||
         product.imageUrl ||
         product.photo ||
         "logo.jpeg",
-      weight:
-        product.weight ||
-        product.size ||
-        "",
+      weight: variant.weight,
       quantity: 1
     });
   }
@@ -659,7 +663,8 @@ document.addEventListener("click", (event) => {
   const addButton = event.target.closest(".add-to-cart");
 
   if (addButton) {
-    addToCart(addButton.dataset.productId);
+    const variantSelect = addButton.closest(".product-card")?.querySelector(".product-variant");
+    addToCart(addButton.dataset.productId, Number(variantSelect?.value || 0));
     return;
   }
 
@@ -685,6 +690,21 @@ document.addEventListener("click", (event) => {
   if (action === "remove") {
     removeFromCart(productId);
   }
+});
+
+document.addEventListener("change", (event) => {
+  const select = event.target.closest(".product-variant");
+  if (!select) return;
+
+  const option = select.selectedOptions[0];
+  const price = Number(option.dataset.price || 0);
+  const mrp = Number(option.dataset.mrp || 0);
+  const priceDisplay = select.closest(".product-card")?.querySelector(".variant-price-display");
+  if (!priceDisplay) return;
+
+  priceDisplay.innerHTML = mrp > price && price > 0
+    ? `<div class="product-price"><strong>${formatPrice(price)}</strong><del>${formatPrice(mrp)}</del></div>`
+    : `<div class="product-price"><strong>${formatPrice(price)}</strong></div>`;
 });
 
 /* =========================================================
@@ -934,7 +954,7 @@ if (checkoutForm) {
       }
 
       const orderItems = state.cart.map((item) => ({
-        productId: item.id,
+        productId: item.productId || item.id,
         name: item.name,
         weight: item.weight || "",
         price: Number(item.price),
