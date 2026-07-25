@@ -6,8 +6,6 @@ import {
   serverTimestamp
 } from "./firebase.js";
 
-import { SAMPLE_PRODUCTS } from "./catalog.js";
-
 /* =========================================================
    SREE VEERABHADRA HOMEMADE FOODS
    Customer website JavaScript
@@ -36,13 +34,6 @@ const PRODUCT_ALIASES = {
   "mixed vegetable": "Mixed Vegetable Pickle"
 };
 
-const PRODUCT_IMAGE_BY_NAME = Object.fromEntries(
-  SAMPLE_PRODUCTS.map((product) => [
-    String(product.name).trim().toLowerCase(),
-    product.imageUrl
-  ])
-);
-
 function canonicalProductName(value = "") {
   const cleanName = String(value).trim();
   return PRODUCT_ALIASES[cleanName.toLowerCase()] || cleanName;
@@ -51,22 +42,12 @@ function canonicalProductName(value = "") {
 function prepareProduct(product) {
   const originalName = product.name || product.title || "Homemade Product";
   const name = canonicalProductName(originalName);
-  const localImage = PRODUCT_IMAGE_BY_NAME[name.toLowerCase()];
   const savedImage = product.imageUrl || product.image || product.photo || "";
-  const isApprovedLocalImage =
-    savedImage.startsWith("product-images/") ||
-    savedImage.startsWith("product-photos/") ||
-    savedImage.startsWith("./product-images/") ||
-    savedImage.startsWith("./product-photos/");
 
   return {
     ...product,
     name,
-    // Prefer photos selected in the admin panel. For old external URLs, keep
-    // the matching catalogue image as a safe fallback.
-    imageUrl: isApprovedLocalImage
-      ? savedImage
-      : (localImage || savedImage || "logo.jpeg")
+    imageUrl: savedImage || "logo.jpeg"
   };
 }
 
@@ -324,6 +305,8 @@ function renderProducts() {
   const productGrid = $("#productGrid");
   const loading = $("#loading");
   const emptyProducts = $("#emptyProducts");
+  const emptyProductsTitle = $("#emptyProductsTitle");
+  const emptyProductsMessage = $("#emptyProductsMessage");
 
   if (!productGrid) {
     console.error("Product grid element was not found.");
@@ -336,6 +319,20 @@ function renderProducts() {
 
   if (filteredProducts.length === 0) {
     productGrid.innerHTML = "";
+    const catalogueIsEmpty = state.products.length === 0;
+
+    if (emptyProductsTitle) {
+      emptyProductsTitle.textContent = catalogueIsEmpty
+        ? "Products coming soon"
+        : "No matching products";
+    }
+
+    if (emptyProductsMessage) {
+      emptyProductsMessage.textContent = catalogueIsEmpty
+        ? "We are preparing our fresh homemade products. Please check back soon."
+        : "Try another product name or category.";
+    }
+
     showElement(emptyProducts);
     return;
   }
@@ -375,15 +372,7 @@ function loadProducts() {
         ...document.data()
       }));
 
-      // Keep the store full while real product details are being added.
-      // Firebase products with the same name replace sample products.
-      const firebaseNames = new Set(
-        firebaseProducts.map((product) => canonicalProductName(product.name || product.title || "").toLowerCase())
-      );
-      const remainingSamples = SAMPLE_PRODUCTS.filter(
-        (product) => !firebaseNames.has(String(product.name).trim().toLowerCase())
-      );
-      state.products = [...firebaseProducts, ...remainingSamples];
+      state.products = firebaseProducts;
 
       state.products.sort((firstProduct, secondProduct) => {
         const firstTime =
@@ -418,10 +407,7 @@ function loadProducts() {
         `;
       }
 
-      // Show the built-in catalogue even when Firebase is temporarily unavailable.
-      state.products = [...SAMPLE_PRODUCTS];
-      renderProducts();
-      showToast("Showing sample catalogue. Firebase connection can be checked later.");
+      state.products = [];
     }
   );
 }
