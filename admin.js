@@ -191,12 +191,18 @@ function startAdmin() {
   );
 
   onSnapshot(
-    query(collection(db, "orders"), orderBy("createdAt", "desc")),
+    collection(db, "orders"),
     (snapshot) => {
       orders = snapshot.docs.map((orderDocument) => ({
         id: orderDocument.id,
         ...orderDocument.data()
       }));
+
+      orders.sort((first, second) => {
+        const firstTime = first.createdAt?.seconds || first.createdAt?.toMillis?.() || 0;
+        const secondTime = second.createdAt?.seconds || second.createdAt?.toMillis?.() || 0;
+        return secondTime - firstTime;
+      });
 
       updateDashboard(orders);
       applyOrderFilters();
@@ -204,7 +210,7 @@ function startAdmin() {
     (error) => {
       console.error("Orders listener error:", error);
       $("#orderRows").innerHTML =
-        `<tr><td colspan="10">Could not load orders.</td></tr>`;
+        `<tr><td colspan="11">Could not load orders: ${escapeHtml(error.message)}</td></tr>`;
     }
   );
 
