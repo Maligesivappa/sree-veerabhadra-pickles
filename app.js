@@ -31,6 +31,9 @@ const SHIPPING_RATES = {
   "Maharashtra": 100
 };
 
+const BUSINESS_UPI_ID = "Q312612926@ybl";
+const BUSINESS_UPI_NAME = "Sree Veerabhadra Homemade Foods";
+
 function getShippingCharge(customerState) {
   if (!customerState) return 0;
   return SHIPPING_RATES[customerState] ?? 120;
@@ -854,6 +857,31 @@ $$('input[name="paymentMethod"], input[name="payment"]').forEach((input) => {
 updatePaymentSection();
 
 $("#customerState")?.addEventListener("change", updateShippingSummary);
+
+$("#upiPayBtn")?.addEventListener("click", () => {
+  const customerState = $("#customerState")?.value || "";
+  if (!customerState) {
+    showToast("Please select your delivery state first.");
+    $("#customerState")?.focus();
+    return;
+  }
+
+  const { grandTotal } = updateShippingSummary();
+  if (grandTotal <= 0) {
+    showToast("Please add a product to your cart first.");
+    return;
+  }
+
+  const paymentParams = new URLSearchParams({
+    pa: BUSINESS_UPI_ID,
+    pn: BUSINESS_UPI_NAME,
+    am: grandTotal.toFixed(2),
+    cu: "INR",
+    tn: "Sree Veerabhadra order payment"
+  });
+
+  window.location.href = `upi://pay?${paymentParams.toString()}`;
+});
 
 /* =========================================================
    PLACE ORDER
