@@ -83,6 +83,25 @@
       color: #666;
     }
 
+    .order-feedback {
+      margin: 18px 0;
+      padding: 18px;
+      border: 1px solid #e8c98e;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #fffaf0, #fff1cf);
+    }
+
+    .order-feedback h3 { margin: 0 0 5px; color: #8f2918; }
+    .order-feedback label { display: block; margin: 12px 0; font-weight: 700; }
+    .order-feedback select, .order-feedback textarea { width: 100%; margin-top: 6px; padding: 11px; border: 1px solid #dcc5a4; border-radius: 9px; background: white; font: inherit; }
+    .feedback-submitted { padding: 14px; border-radius: 10px; background: #e5f5e8; color: #14622f; font-weight: 800; text-align: center; }
+    #feedbackThanks { position: fixed; inset: 0; z-index: 10000; display: grid; place-items: center; padding: 20px; background: rgba(40, 24, 17, .72); backdrop-filter: blur(7px); }
+    .feedback-thanks-card { width: min(100%, 470px); padding: 30px 24px; border-radius: 26px; border: 2px solid #efcd87; background: linear-gradient(150deg, #fffdf8, #ffedc8); text-align: center; box-shadow: 0 24px 70px rgba(50, 20, 10, .35); }
+    .feedback-thanks-card img { width: 82px; height: 82px; object-fit: contain; border-radius: 50%; }
+    .feedback-heart { color: #a52c1b; font-size: 48px; line-height: 1; }
+    .feedback-thanks-card h2 { color: #7f2417; font-family: Georgia, serif; font-size: 30px; margin: 8px 0; }
+    .feedback-thanks-card p { color: #665048; line-height: 1.6; margin-bottom: 20px; }
+
     @media (max-width: 600px) {
       .account-header {
         align-items: flex-start;
@@ -169,6 +188,6 @@
   </div>
 </footer>
 
-<script type="module" src="account.js?v=5"></script>
+<script type="module" src="account.js?v=6"></script>
 </body>
 </html>

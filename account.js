@@ -8,6 +8,7 @@ import {
   setDoc,
   query,
   where,
+  serverTimestamp,
   onAuthStateChanged,
   signOut
 } from "./firebase.js";
@@ -39,6 +40,21 @@ function formatDate(timestamp) {
 
 function escapeText(value = "") {
   return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+}
+
+function showFeedbackThanks() {
+  document.querySelector("#feedbackThanks")?.remove();
+  const screen = document.createElement("div");
+  screen.id = "feedbackThanks";
+  screen.innerHTML = `
+    <div class="feedback-thanks-card">
+      <img src="logo.jpeg" alt="Sree Veerabhadra logo">
+      <div class="feedback-heart">♥</div>
+      <h2>Thank You for Your Feedback!</h2>
+      <p>Your valuable feedback helps our homemade food business serve you better.</p>
+      <a href="index.html#products" class="btn primary">Continue Shopping</a>
+    </div>`;
+  document.body.appendChild(screen);
 }
 
 window.downloadCustomerInvoice = (encodedOrder) => {
@@ -86,6 +102,7 @@ function displayOrders(orders) {
       qty: item.quantity || item.qty || 1,
       offerPrice: item.price ?? item.offerPrice ?? 0
     })) : [];
+    const delivered = ["delivered", "completed"].includes(String(order.status || "").toLowerCase());
 
     return `
       <article class="order-card">
@@ -178,10 +195,61 @@ ${
     `
     : ""
 }
+        ${delivered ? `
+          <form class="order-feedback" data-order-id="${escapeText(order.id)}" data-order-reference="${escapeText(order.orderReference || order.id.slice(0, 8).toUpperCase())}">
+            <h3>How was your order?</h3>
+            <p>Your rating and feedback are valuable to us.</p>
+            <label>Rating
+              <select name="rating" required>
+                <option value="">Choose rating</option>
+                <option value="5">★★★★★ Excellent</option>
+                <option value="4">★★★★☆ Very good</option>
+                <option value="3">★★★☆☆ Good</option>
+                <option value="2">★★☆☆☆ Fair</option>
+                <option value="1">★☆☆☆☆ Needs improvement</option>
+              </select>
+            </label>
+            <label>Feedback
+              <textarea name="message" rows="3" maxlength="500" placeholder="Tell us about the taste, packing and delivery…" required></textarea>
+            </label>
+            <button class="btn primary" type="submit">Submit Feedback</button>
+          </form>
+        ` : ""}
         <button class="btn primary" type="button" onclick="downloadCustomerInvoice('${encodeURIComponent(JSON.stringify(order)).replaceAll("'", "%27")}')">Download Invoice</button>
       </article>
     `;
   }).join("");
+
+  ordersList.querySelectorAll(".order-feedback").forEach((form) => {
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!signedInUser) return;
+      const button = form.querySelector('button[type="submit"]');
+      const data = new FormData(form);
+      button.disabled = true;
+      button.textContent = "Submitting…";
+      try {
+        await setDoc(doc(db, "feedback", `${signedInUser.uid}_${form.dataset.orderId}`), {
+          orderId: form.dataset.orderId,
+          orderReference: form.dataset.orderReference,
+          userId: signedInUser.uid,
+          customerName: customerName.textContent || "Customer",
+          customerEmail: signedInUser.email || "",
+          customerPhone: customerPhone.textContent || "",
+          rating: Number(data.get("rating")),
+          message: String(data.get("message") || "").trim(),
+          createdAt: serverTimestamp()
+        }, { merge: true });
+        form.innerHTML = `<div class="feedback-submitted">✓ Feedback submitted. Thank you!</div>`;
+        showFeedbackThanks();
+      } catch (error) {
+        console.error("Feedback submission error:", error);
+        alert("Could not submit feedback. Please try again.");
+        button.disabled = false;
+        button.textContent = "Submit Feedback";
+      }
+    });
+  });
 }
 
 async function loadProfile(user) {

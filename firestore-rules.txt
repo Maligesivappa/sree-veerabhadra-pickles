@@ -10,22 +10,38 @@ service cloud.firestore {
 
     match /customers/{customerId} {
       allow read, create, update: if request.auth != null &&
-        (request.auth.uid == customerId || request.auth.token.email == "admin@sreeveerabhadra.com");
-      allow delete: if request.auth != null && request.auth.token.email == "admin@sreeveerabhadra.com";
+        (request.auth.uid == customerId || request.auth.token.email in ["malige.vishala@gmail.com", "admin@sreeveerabhadra.com"]);
+      allow delete: if request.auth != null && request.auth.token.email in ["malige.vishala@gmail.com", "admin@sreeveerabhadra.com"];
     }
 
     match /orders/{orderId} {
       allow create: if true;
       allow read: if request.auth != null &&
-        (resource.data.userId == request.auth.uid ||
+        (request.auth.token.email in ["malige.vishala@gmail.com", "admin@sreeveerabhadra.com"] ||
+         resource.data.userId == request.auth.uid ||
          resource.data.phone == get(/databases/$(database)/documents/customers/$(request.auth.uid)).data.phone ||
-         request.auth.token.email == "admin@sreeveerabhadra.com");
-      allow update, delete: if request.auth != null && request.auth.token.email == "admin@sreeveerabhadra.com";
+         false);
+      allow update, delete: if request.auth != null && request.auth.token.email in ["malige.vishala@gmail.com", "admin@sreeveerabhadra.com"];
     }
 
     match /coupons/{couponId} {
       allow read: if true;
-      allow create, update, delete: if request.auth != null && request.auth.token.email == "admin@sreeveerabhadra.com";
+      allow create, update, delete: if request.auth != null && request.auth.token.email in ["malige.vishala@gmail.com", "admin@sreeveerabhadra.com"];
+    }
+
+    // Signed-in customers can submit one feedback document per order.
+    // The document ID used by the website is: userId_orderId.
+    match /feedback/{feedbackId} {
+      allow create, update: if request.auth != null &&
+        request.resource.data.userId == request.auth.uid &&
+        feedbackId.matches(request.auth.uid + '_.*');
+      allow read: if request.auth != null &&
+        (resource.data.userId == request.auth.uid ||
+         request.auth.token.email == "malige.vishala@gmail.com" ||
+         request.auth.token.email == "admin@sreeveerabhadra.com");
+      allow delete: if request.auth != null &&
+        (request.auth.token.email == "malige.vishala@gmail.com" ||
+         request.auth.token.email == "admin@sreeveerabhadra.com");
     }
 
     match /{document=**} {
