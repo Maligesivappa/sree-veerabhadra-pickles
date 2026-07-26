@@ -181,6 +181,59 @@ function showToast(message) {
   }, 2500);
 }
 
+function showOrderSuccess({ orderReference, subtotal, discount, shippingCharge, total }) {
+  document.querySelector("#orderSuccessTheme")?.remove();
+
+  const successScreen = document.createElement("div");
+  successScreen.id = "orderSuccessTheme";
+  successScreen.setAttribute("role", "dialog");
+  successScreen.setAttribute("aria-modal", "true");
+  successScreen.setAttribute("aria-label", "Order placed successfully");
+  successScreen.innerHTML = `
+    <style>
+      #orderSuccessTheme{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:18px;background:rgba(38,22,16,.72);backdrop-filter:blur(7px);animation:svFade .25s ease}
+      #orderSuccessTheme .success-card{position:relative;width:min(100%,520px);max-height:92vh;overflow:auto;text-align:center;background:linear-gradient(160deg,#fffdf7,#fff0cf);border:2px solid #f0cf8d;border-radius:28px;padding:30px 24px;box-shadow:0 25px 70px rgba(44,21,12,.35)}
+      #orderSuccessTheme .success-logo{width:82px;height:82px;object-fit:contain;border-radius:50%;background:#fff;box-shadow:0 7px 22px rgba(130,52,27,.18)}
+      #orderSuccessTheme .success-check{display:grid;place-items:center;width:66px;height:66px;margin:-8px auto 12px;border-radius:50%;background:#24733a;color:#fff;font-size:36px;border:6px solid #e4f3e7;animation:svPop .45s ease}
+      #orderSuccessTheme h2{margin:8px 0;color:#7d2115;font:700 34px/1.1 Georgia,serif}
+      #orderSuccessTheme .success-message{margin:10px auto 18px;max-width:390px;color:#5e493e;line-height:1.55}
+      #orderSuccessTheme .order-number{display:inline-block;padding:9px 15px;background:#fff;border:1px dashed #b66a30;border-radius:10px;color:#7d2115;font-weight:800;letter-spacing:.6px}
+      #orderSuccessTheme .success-summary{margin:20px 0;padding:15px 18px;text-align:left;background:#fff;border:1px solid #eedcc2;border-radius:16px}
+      #orderSuccessTheme .success-summary p{display:flex;justify-content:space-between;gap:15px;margin:8px 0;color:#5b473d}
+      #orderSuccessTheme .success-summary .final{padding-top:10px;border-top:2px solid #982d1b;color:#7d2115;font-size:19px;font-weight:800}
+      #orderSuccessTheme .fresh-note{margin:16px 0;padding:12px;border-radius:12px;background:#eaf5eb;color:#245c30;font-weight:700;line-height:1.45}
+      #orderSuccessTheme .contact-note{margin:12px 0;padding:12px;border-radius:12px;background:#fff;border:1px solid #eedcc2;color:#594138;line-height:1.5}
+      #orderSuccessTheme .contact-note a{color:#24733a;font-weight:800;text-decoration:none}
+      #orderSuccessTheme .success-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+      #orderSuccessTheme .success-actions a,#orderSuccessTheme .success-actions button{display:block;border:0;border-radius:12px;padding:13px 12px;text-decoration:none;font-weight:800;cursor:pointer}
+      #orderSuccessTheme .my-orders{background:#982d1b;color:#fff}.continue-shop{background:#fff;color:#7d2115;border:1px solid #d9b995!important}
+      @keyframes svFade{from{opacity:0}to{opacity:1}}@keyframes svPop{0%{transform:scale(.4)}75%{transform:scale(1.1)}100%{transform:scale(1)}}
+      @media(max-width:430px){#orderSuccessTheme .success-card{padding:24px 16px;border-radius:22px}#orderSuccessTheme h2{font-size:28px}#orderSuccessTheme .success-actions{grid-template-columns:1fr}}
+    </style>
+    <section class="success-card">
+      <img class="success-logo" src="logo.jpeg" alt="Sree Veerabhadra Homemade Foods logo">
+      <div class="success-check">✓</div>
+      <h2>Thank You for Your Order!</h2>
+      <p class="success-message">Your order has been received successfully. We will prepare it freshly with care and keep you updated.</p>
+      <div class="order-number">Order ID: ${escapeHTML(orderReference)}</div>
+      <div class="success-summary">
+        <p><span>Items subtotal</span><strong>${formatPrice(subtotal)}</strong></p>
+        <p><span>Coupon discount</span><strong>-${formatPrice(discount || 0)}</strong></p>
+        <p><span>Shipping</span><strong>${shippingCharge === 0 ? "FREE" : formatPrice(shippingCharge)}</strong></p>
+        <p class="final"><span>Order total</span><strong>${formatPrice(total)}</strong></p>
+      </div>
+      <div class="fresh-note">🌿 Freshly prepared after your order • Thank you for supporting our homemade food business!</div>
+      <div class="contact-note"><strong>Need help?</strong><br>Call or WhatsApp: <a href="https://wa.me/919490210173" target="_blank" rel="noopener">+91 94902 10173</a><br>Opposite Bus Stand, near Rajappa Hospital, Velgode – 518533, Nandyal</div>
+      <div class="success-actions">
+        <a class="my-orders" href="account.html">View My Orders</a>
+        <button class="continue-shop" type="button">Continue Shopping</button>
+      </div>
+    </section>`;
+
+  successScreen.querySelector(".continue-shop").addEventListener("click", () => successScreen.remove());
+  document.body.appendChild(successScreen);
+}
+
 function downloadInvoice(order) {
   const itemRows = (order.items || []).map((item, index) => `<tr><td>${index + 1}</td><td><strong>${escapeHTML(item.name)}</strong><br><small>${escapeHTML(item.weight || "")}</small></td><td>${item.quantity}</td><td>${formatPrice(item.price)}</td><td>${formatPrice(item.itemTotal)}</td></tr>`).join("");
   const customer = order.customer || {};
@@ -1200,9 +1253,13 @@ if (checkoutForm) {
       notifySellerOnWhatsApp(orderData);
 
       window.setTimeout(() => {
-        alert(
-          `Order placed successfully!\n\nOrder ID: ${orderReference}\nItems: ${formatPrice(subtotal)}\nCoupon discount: ${formatPrice(discount)}\nShipping: ${shippingCharge === 0 ? "FREE" : formatPrice(shippingCharge)}\nFinal total: ${formatPrice(orderTotal)}`
-        );
+        showOrderSuccess({
+          orderReference,
+          subtotal,
+          discount,
+          shippingCharge,
+          total: orderTotal
+        });
       }, 400);
     } catch (error) {
       console.error("Order placement error:", error);
