@@ -270,7 +270,7 @@ function renderProducts() {
   $("#productRows").innerHTML = visibleProducts.length
     ? visibleProducts.map((product) => `
       <tr>
-        <td><img class="product-thumb" src="${escapeAttribute(product.imageUrl || "logo.jpeg")}" alt=""></td>
+        <td><img class="product-thumb" src="${escapeAttribute(product.name === "Nalla Nuvvula Laddu" ? "product-images/nalla-nuvvula-laddu.jpeg" : (product.imageUrl || "logo.jpeg"))}" alt=""></td>
         <td>${escapeHtml(product.name || "")}</td>
         <td>${escapeHtml(product.category || "Uncategorised")}</td>
         <td><div class="variant-summary">${normaliseVariants(product).map((variant) =>
